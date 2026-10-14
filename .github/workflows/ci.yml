@@ -43,7 +43,7 @@ jobs:
           # third-party package it pulls in is in the export and is audited.
           uv export --frozen --no-dev --no-emit-project --no-hashes --format requirements-txt             | grep -v '^agentic-core' > audit-requirements.txt
           uvx pip-audit -r audit-requirements.txt --no-deps --disable-pip
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: matrix.python == '3.12'
         with:
           name: coverage
@@ -177,7 +177,7 @@ jobs:
           test "$FAIL_OUTCOME" = "fail"
           test "$FAIL_STEP" = "failure"
           jq -e '.signature.alg == "EdDSA"' report-hardened.json
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: release-gate-reports
           path: report-*.json
@@ -204,7 +204,7 @@ jobs:
           fail-build: true
           severity-cutoff: high
           only-fixed: true
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: sbom
           path: sbom.cdx.json
