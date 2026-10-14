@@ -1,0 +1,3573 @@
+{
+  "components": {
+    "schemas": {
+      "Approval": {
+        "properties": {
+          "approver": {
+            "title": "Approver",
+            "type": "string"
+          },
+          "at": {
+            "format": "date-time",
+            "title": "At",
+            "type": "string"
+          },
+          "audit_hash": {
+            "title": "Audit Hash",
+            "type": "string"
+          },
+          "reason": {
+            "title": "Reason",
+            "type": "string"
+          }
+        },
+        "required": [
+          "approver",
+          "reason",
+          "at",
+          "audit_hash"
+        ],
+        "title": "Approval",
+        "type": "object"
+      },
+      "ApproveRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "reason": {
+            "maxLength": 500,
+            "minLength": 5,
+            "title": "Reason",
+            "type": "string"
+          }
+        },
+        "required": [
+          "reason"
+        ],
+        "title": "ApproveRequest",
+        "type": "object"
+      },
+      "CalibrateRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "examples": {
+            "default": 100,
+            "maximum": 1000.0,
+            "minimum": 10.0,
+            "title": "Examples",
+            "type": "integer"
+          },
+          "seed": {
+            "default": 0,
+            "maximum": 2147483647.0,
+            "minimum": 0.0,
+            "title": "Seed",
+            "type": "integer"
+          },
+          "suite": {
+            "maxLength": 140,
+            "minLength": 1,
+            "title": "Suite",
+            "type": "string"
+          }
+        },
+        "required": [
+          "suite"
+        ],
+        "title": "CalibrateRequest",
+        "type": "object"
+      },
+      "CalibrationResult": {
+        "properties": {
+          "abstained": {
+            "title": "Abstained",
+            "type": "integer"
+          },
+          "agreement": {
+            "title": "Agreement",
+            "type": "number"
+          },
+          "calibrated": {
+            "title": "Calibrated",
+            "type": "boolean"
+          },
+          "examples": {
+            "title": "Examples",
+            "type": "integer"
+          },
+          "false_negative": {
+            "title": "False Negative",
+            "type": "integer"
+          },
+          "false_positive": {
+            "title": "False Positive",
+            "type": "integer"
+          },
+          "kappa": {
+            "title": "Kappa",
+            "type": "number"
+          },
+          "max_abstain_rate": {
+            "title": "Max Abstain Rate",
+            "type": "number"
+          },
+          "min_kappa": {
+            "title": "Min Kappa",
+            "type": "number"
+          },
+          "rated": {
+            "title": "Rated",
+            "type": "integer"
+          },
+          "true_negative": {
+            "title": "True Negative",
+            "type": "integer"
+          },
+          "true_positive": {
+            "title": "True Positive",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "examples",
+          "rated",
+          "abstained",
+          "agreement",
+          "kappa",
+          "true_positive",
+          "false_positive",
+          "true_negative",
+          "false_negative",
+          "min_kappa",
+          "max_abstain_rate",
+          "calibrated"
+        ],
+        "title": "CalibrationResult",
+        "type": "object"
+      },
+      "Category": {
+        "enum": [
+          "marker_leakage",
+          "secret_echo",
+          "forbidden_tool",
+          "approval_bypass",
+          "policy_violation"
+        ],
+        "title": "Category",
+        "type": "string"
+      },
+      "CategoryAssessment": {
+        "properties": {
+          "category": {
+            "$ref": "#/components/schemas/Category"
+          },
+          "conclusive": {
+            "title": "Conclusive",
+            "type": "integer"
+          },
+          "error_rate": {
+            "title": "Error Rate",
+            "type": "number"
+          },
+          "max_failure_rate": {
+            "title": "Max Failure Rate",
+            "type": "number"
+          },
+          "observed_rate": {
+            "title": "Observed Rate",
+            "type": "number"
+          },
+          "reason": {
+            "title": "Reason",
+            "type": "string"
+          },
+          "required_probes": {
+            "title": "Required Probes",
+            "type": "integer"
+          },
+          "upper_bound": {
+            "title": "Upper Bound",
+            "type": "number"
+          },
+          "verdict": {
+            "$ref": "#/components/schemas/CategoryVerdict"
+          }
+        },
+        "required": [
+          "category",
+          "verdict",
+          "max_failure_rate",
+          "observed_rate",
+          "upper_bound",
+          "conclusive",
+          "required_probes",
+          "error_rate",
+          "reason"
+        ],
+        "title": "CategoryAssessment",
+        "type": "object"
+      },
+      "CategoryStats": {
+        "properties": {
+          "bootstrap_high": {
+            "title": "Bootstrap High",
+            "type": "number"
+          },
+          "bootstrap_low": {
+            "title": "Bootstrap Low",
+            "type": "number"
+          },
+          "category": {
+            "$ref": "#/components/schemas/Category"
+          },
+          "conclusive": {
+            "title": "Conclusive",
+            "type": "integer"
+          },
+          "critical_failures": {
+            "title": "Critical Failures",
+            "type": "integer"
+          },
+          "errors": {
+            "title": "Errors",
+            "type": "integer"
+          },
+          "failure_rate": {
+            "title": "Failure Rate",
+            "type": "number"
+          },
+          "failures": {
+            "title": "Failures",
+            "type": "integer"
+          },
+          "probes": {
+            "title": "Probes",
+            "type": "integer"
+          },
+          "scenarios": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Scenarios",
+            "type": "array"
+          },
+          "wilson_high": {
+            "title": "Wilson High",
+            "type": "number"
+          },
+          "wilson_low": {
+            "title": "Wilson Low",
+            "type": "number"
+          }
+        },
+        "required": [
+          "category",
+          "probes",
+          "conclusive",
+          "failures",
+          "errors",
+          "critical_failures",
+          "failure_rate",
+          "wilson_low",
+          "wilson_high",
+          "bootstrap_low",
+          "bootstrap_high",
+          "scenarios"
+        ],
+        "title": "CategoryStats",
+        "type": "object"
+      },
+      "CategoryVerdict": {
+        "enum": [
+          "pass",
+          "breach",
+          "insufficient_evidence"
+        ],
+        "title": "CategoryVerdict",
+        "type": "string"
+      },
+      "ContextDocument": {
+        "properties": {
+          "content": {
+            "title": "Content",
+            "type": "string"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "source": {
+            "title": "Source",
+            "type": "string"
+          },
+          "trust": {
+            "default": "external",
+            "title": "Trust",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "source",
+          "content"
+        ],
+        "title": "ContextDocument",
+        "type": "object"
+      },
+      "DecisionList": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/GateDecision"
+            },
+            "title": "Items",
+            "type": "array"
+          },
+          "limit": {
+            "title": "Limit",
+            "type": "integer"
+          },
+          "offset": {
+            "title": "Offset",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "items",
+          "limit",
+          "offset"
+        ],
+        "title": "DecisionList",
+        "type": "object"
+      },
+      "Environment": {
+        "enum": [
+          "development",
+          "staging",
+          "production"
+        ],
+        "title": "Environment",
+        "type": "string"
+      },
+      "EvaluationReport": {
+        "description": "The release evidence. Signed as canonical JSON; see gate.report.",
+        "properties": {
+          "approvals": {
+            "default": [],
+            "items": {
+              "$ref": "#/components/schemas/Approval"
+            },
+            "title": "Approvals",
+            "type": "array"
+          },
+          "assessments": {
+            "items": {
+              "$ref": "#/components/schemas/CategoryAssessment"
+            },
+            "title": "Assessments",
+            "type": "array"
+          },
+          "decision_policy": {
+            "$ref": "#/components/schemas/PolicyReference"
+          },
+          "decision_reason": {
+            "title": "Decision Reason",
+            "type": "string"
+          },
+          "environment": {
+            "$ref": "#/components/schemas/Environment"
+          },
+          "gate_policy": {
+            "$ref": "#/components/schemas/PolicyReference"
+          },
+          "generated_at": {
+            "format": "date-time",
+            "title": "Generated At",
+            "type": "string"
+          },
+          "llm_judge": {
+            "$ref": "#/components/schemas/LlmJudgeStatus"
+          },
+          "matched_rules": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Matched Rules",
+            "type": "array"
+          },
+          "outcome": {
+            "$ref": "#/components/schemas/GateOutcome"
+          },
+          "platform_version": {
+            "title": "Platform Version",
+            "type": "string"
+          },
+          "regression": {
+            "$ref": "#/components/schemas/RegressionReport"
+          },
+          "report_id": {
+            "title": "Report Id",
+            "type": "string"
+          },
+          "requested_by": {
+            "title": "Requested By",
+            "type": "string"
+          },
+          "run_id": {
+            "title": "Run Id",
+            "type": "string"
+          },
+          "seed": {
+            "title": "Seed",
+            "type": "integer"
+          },
+          "suite_digest": {
+            "title": "Suite Digest",
+            "type": "string"
+          },
+          "suite_name": {
+            "title": "Suite Name",
+            "type": "string"
+          },
+          "suite_version": {
+            "title": "Suite Version",
+            "type": "string"
+          },
+          "summary": {
+            "$ref": "#/components/schemas/RunSummary"
+          },
+          "target_id": {
+            "title": "Target Id",
+            "type": "string"
+          },
+          "target_kind": {
+            "$ref": "#/components/schemas/TargetKind"
+          },
+          "target_name": {
+            "title": "Target Name",
+            "type": "string"
+          },
+          "target_risk": {
+            "$ref": "#/components/schemas/Severity"
+          },
+          "target_version": {
+            "title": "Target Version",
+            "type": "string"
+          }
+        },
+        "required": [
+          "report_id",
+          "platform_version",
+          "generated_at",
+          "target_id",
+          "target_name",
+          "target_kind",
+          "target_version",
+          "target_risk",
+          "run_id",
+          "seed",
+          "environment",
+          "suite_name",
+          "suite_version",
+          "suite_digest",
+          "gate_policy",
+          "decision_policy",
+          "matched_rules",
+          "decision_reason",
+          "summary",
+          "assessments",
+          "regression",
+          "llm_judge",
+          "outcome",
+          "requested_by"
+        ],
+        "title": "EvaluationReport",
+        "type": "object"
+      },
+      "Expansion": {
+        "properties": {
+          "digest": {
+            "title": "Digest",
+            "type": "string"
+          },
+          "probe_count": {
+            "title": "Probe Count",
+            "type": "integer"
+          },
+          "probes": {
+            "items": {
+              "$ref": "#/components/schemas/Probe"
+            },
+            "title": "Probes",
+            "type": "array"
+          },
+          "seed": {
+            "title": "Seed",
+            "type": "integer"
+          },
+          "suite": {
+            "title": "Suite",
+            "type": "string"
+          },
+          "version": {
+            "title": "Version",
+            "type": "string"
+          }
+        },
+        "required": [
+          "suite",
+          "version",
+          "digest",
+          "seed",
+          "probe_count",
+          "probes"
+        ],
+        "title": "Expansion",
+        "type": "object"
+      },
+      "GateDecision": {
+        "properties": {
+          "audit_hash": {
+            "title": "Audit Hash",
+            "type": "string"
+          },
+          "audit_sequence": {
+            "title": "Audit Sequence",
+            "type": "integer"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "outcome": {
+            "$ref": "#/components/schemas/GateOutcome"
+          },
+          "requested_by": {
+            "title": "Requested By",
+            "type": "string"
+          },
+          "run_id": {
+            "title": "Run Id",
+            "type": "string"
+          },
+          "signed_report": {
+            "$ref": "#/components/schemas/SignedReport"
+          },
+          "target_id": {
+            "title": "Target Id",
+            "type": "string"
+          },
+          "target_version": {
+            "title": "Target Version",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "run_id",
+          "target_id",
+          "target_version",
+          "outcome",
+          "requested_by",
+          "created_at",
+          "audit_sequence",
+          "audit_hash",
+          "signed_report"
+        ],
+        "title": "GateDecision",
+        "type": "object"
+      },
+      "GateOutcome": {
+        "enum": [
+          "pass",
+          "fail",
+          "require_approval",
+          "approved"
+        ],
+        "title": "GateOutcome",
+        "type": "string"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "title": "Detail",
+            "type": "array"
+          }
+        },
+        "title": "HTTPValidationError",
+        "type": "object"
+      },
+      "History": {
+        "properties": {
+          "points": {
+            "items": {
+              "$ref": "#/components/schemas/VersionPoint"
+            },
+            "title": "Points",
+            "type": "array"
+          },
+          "target_id": {
+            "title": "Target Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "target_id",
+          "points"
+        ],
+        "title": "History",
+        "type": "object"
+      },
+      "JudgeName": {
+        "enum": [
+          "marker_leakage",
+          "forbidden_tool",
+          "policy_violation",
+          "approval_bypass",
+          "llm_rubric"
+        ],
+        "title": "JudgeName",
+        "type": "string"
+      },
+      "JudgeVerdict": {
+        "properties": {
+          "advisory": {
+            "default": false,
+            "title": "Advisory",
+            "type": "boolean"
+          },
+          "evidence": {
+            "default": [],
+            "items": {
+              "type": "string"
+            },
+            "title": "Evidence",
+            "type": "array"
+          },
+          "judge": {
+            "$ref": "#/components/schemas/JudgeName"
+          },
+          "outcome": {
+            "$ref": "#/components/schemas/VerdictOutcome"
+          }
+        },
+        "required": [
+          "judge",
+          "outcome"
+        ],
+        "title": "JudgeVerdict",
+        "type": "object"
+      },
+      "Labels": {
+        "additionalProperties": false,
+        "properties": {
+          "mitre_atlas": {
+            "default": [],
+            "items": {
+              "type": "string"
+            },
+            "title": "Mitre Atlas",
+            "type": "array"
+          },
+          "owasp_llm": {
+            "items": {
+              "type": "string"
+            },
+            "minItems": 1,
+            "title": "Owasp Llm",
+            "type": "array"
+          }
+        },
+        "required": [
+          "owasp_llm"
+        ],
+        "title": "Labels",
+        "type": "object"
+      },
+      "LlmJudgeStatus": {
+        "properties": {
+          "binding": {
+            "default": false,
+            "title": "Binding",
+            "type": "boolean"
+          },
+          "calibrated": {
+            "title": "Calibrated",
+            "type": "boolean"
+          },
+          "enabled": {
+            "title": "Enabled",
+            "type": "boolean"
+          },
+          "kappa": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Kappa"
+          }
+        },
+        "required": [
+          "enabled",
+          "calibrated"
+        ],
+        "title": "LlmJudgeStatus",
+        "type": "object"
+      },
+      "PolicyReference": {
+        "properties": {
+          "digest": {
+            "title": "Digest",
+            "type": "string"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "version": {
+            "title": "Version",
+            "type": "string"
+          }
+        },
+        "required": [
+          "name",
+          "version",
+          "digest"
+        ],
+        "title": "PolicyReference",
+        "type": "object"
+      },
+      "Probe": {
+        "properties": {
+          "action_tools": {
+            "default": [],
+            "items": {
+              "type": "string"
+            },
+            "title": "Action Tools",
+            "type": "array"
+          },
+          "category": {
+            "$ref": "#/components/schemas/Category"
+          },
+          "forbidden_tools": {
+            "default": [],
+            "items": {
+              "type": "string"
+            },
+            "title": "Forbidden Tools",
+            "type": "array"
+          },
+          "invocation": {
+            "$ref": "#/components/schemas/ProbeInvocation"
+          },
+          "judges": {
+            "items": {
+              "$ref": "#/components/schemas/JudgeName"
+            },
+            "title": "Judges",
+            "type": "array"
+          },
+          "kind": {
+            "$ref": "#/components/schemas/ProbeKind"
+          },
+          "labels": {
+            "$ref": "#/components/schemas/Labels"
+          },
+          "markers": {
+            "default": [],
+            "items": {
+              "type": "string"
+            },
+            "title": "Markers",
+            "type": "array"
+          },
+          "parameters": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "title": "Parameters",
+            "type": "object"
+          },
+          "probe_id": {
+            "title": "Probe Id",
+            "type": "string"
+          },
+          "scenario_id": {
+            "title": "Scenario Id",
+            "type": "string"
+          },
+          "severity": {
+            "$ref": "#/components/schemas/Severity"
+          }
+        },
+        "required": [
+          "probe_id",
+          "scenario_id",
+          "category",
+          "kind",
+          "severity",
+          "labels",
+          "parameters",
+          "invocation",
+          "judges"
+        ],
+        "title": "Probe",
+        "type": "object"
+      },
+      "ProbeEvidence": {
+        "properties": {
+          "latency_ms": {
+            "default": 0.0,
+            "title": "Latency Ms",
+            "type": "number"
+          },
+          "output_digest": {
+            "title": "Output Digest",
+            "type": "string"
+          },
+          "output_excerpt": {
+            "title": "Output Excerpt",
+            "type": "string"
+          },
+          "response_status": {
+            "$ref": "#/components/schemas/ResponseStatus"
+          },
+          "tool_calls": {
+            "default": [],
+            "items": {
+              "$ref": "#/components/schemas/ToolCallRecord"
+            },
+            "title": "Tool Calls",
+            "type": "array"
+          },
+          "trace_source": {
+            "default": "self-reported",
+            "title": "Trace Source",
+            "type": "string"
+          }
+        },
+        "required": [
+          "response_status",
+          "output_digest",
+          "output_excerpt"
+        ],
+        "title": "ProbeEvidence",
+        "type": "object"
+      },
+      "ProbeInvocation": {
+        "description": "What the target sees. It never reveals the probe's category or markers.",
+        "properties": {
+          "context": {
+            "default": [],
+            "items": {
+              "$ref": "#/components/schemas/ContextDocument"
+            },
+            "title": "Context",
+            "type": "array"
+          },
+          "session_id": {
+            "title": "Session Id",
+            "type": "string"
+          },
+          "task": {
+            "title": "Task",
+            "type": "string"
+          }
+        },
+        "required": [
+          "session_id",
+          "task"
+        ],
+        "title": "ProbeInvocation",
+        "type": "object"
+      },
+      "ProbeKind": {
+        "enum": [
+          "canary_in_context",
+          "secret_marker",
+          "forbidden_tool",
+          "out_of_scope_action"
+        ],
+        "title": "ProbeKind",
+        "type": "string"
+      },
+      "ProbeOutcome": {
+        "enum": [
+          "pass",
+          "fail",
+          "error"
+        ],
+        "title": "ProbeOutcome",
+        "type": "string"
+      },
+      "ProbeResult": {
+        "properties": {
+          "attempts": {
+            "default": 1,
+            "title": "Attempts",
+            "type": "integer"
+          },
+          "category": {
+            "$ref": "#/components/schemas/Category"
+          },
+          "error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error"
+          },
+          "evidence": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ProbeEvidence"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "outcome": {
+            "$ref": "#/components/schemas/ProbeOutcome"
+          },
+          "probe_id": {
+            "title": "Probe Id",
+            "type": "string"
+          },
+          "run_id": {
+            "title": "Run Id",
+            "type": "string"
+          },
+          "scenario_id": {
+            "title": "Scenario Id",
+            "type": "string"
+          },
+          "severity": {
+            "$ref": "#/components/schemas/Severity"
+          },
+          "verdicts": {
+            "default": [],
+            "items": {
+              "$ref": "#/components/schemas/JudgeVerdict"
+            },
+            "title": "Verdicts",
+            "type": "array"
+          }
+        },
+        "required": [
+          "run_id",
+          "probe_id",
+          "scenario_id",
+          "category",
+          "severity",
+          "outcome"
+        ],
+        "title": "ProbeResult",
+        "type": "object"
+      },
+      "ProbeResultList": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/ProbeResult"
+            },
+            "title": "Items",
+            "type": "array"
+          },
+          "limit": {
+            "title": "Limit",
+            "type": "integer"
+          },
+          "offset": {
+            "title": "Offset",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "items",
+          "limit",
+          "offset"
+        ],
+        "title": "ProbeResultList",
+        "type": "object"
+      },
+      "ReferenceProfile": {
+        "additionalProperties": false,
+        "description": "Known, measurable weaknesses of an in-process reference target.\n\nEach rate is the probability that the reference agent fails the matching\nprobe category. Used to prove the platform measures what it claims to.",
+        "properties": {
+          "approval_bypass_rate": {
+            "default": 0.0,
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Approval Bypass Rate",
+            "type": "number"
+          },
+          "forbidden_tool_rate": {
+            "default": 0.0,
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Forbidden Tool Rate",
+            "type": "number"
+          },
+          "marker_leak_rate": {
+            "default": 0.0,
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Marker Leak Rate",
+            "type": "number"
+          },
+          "secret_echo_rate": {
+            "default": 0.0,
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Secret Echo Rate",
+            "type": "number"
+          },
+          "seed": {
+            "default": 0,
+            "title": "Seed",
+            "type": "integer"
+          }
+        },
+        "title": "ReferenceProfile",
+        "type": "object"
+      },
+      "RegressionFinding": {
+        "properties": {
+          "baseline_rate": {
+            "title": "Baseline Rate",
+            "type": "number"
+          },
+          "candidate_rate": {
+            "title": "Candidate Rate",
+            "type": "number"
+          },
+          "category": {
+            "$ref": "#/components/schemas/Category"
+          },
+          "difference": {
+            "title": "Difference",
+            "type": "number"
+          },
+          "difference_high": {
+            "title": "Difference High",
+            "type": "number"
+          },
+          "difference_low": {
+            "title": "Difference Low",
+            "type": "number"
+          },
+          "significant": {
+            "title": "Significant",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "category",
+          "baseline_rate",
+          "candidate_rate",
+          "difference",
+          "difference_low",
+          "difference_high",
+          "significant"
+        ],
+        "title": "RegressionFinding",
+        "type": "object"
+      },
+      "RegressionReport": {
+        "properties": {
+          "baseline_run_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Baseline Run Id"
+          },
+          "baseline_version": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Baseline Version"
+          },
+          "candidate_run_id": {
+            "title": "Candidate Run Id",
+            "type": "string"
+          },
+          "candidate_version": {
+            "title": "Candidate Version",
+            "type": "string"
+          },
+          "categories": {
+            "default": [],
+            "items": {
+              "$ref": "#/components/schemas/RegressionFinding"
+            },
+            "title": "Categories",
+            "type": "array"
+          },
+          "flips": {
+            "default": [],
+            "items": {
+              "$ref": "#/components/schemas/ScenarioFlip"
+            },
+            "title": "Flips",
+            "type": "array"
+          }
+        },
+        "required": [
+          "candidate_run_id",
+          "candidate_version"
+        ],
+        "title": "RegressionReport",
+        "type": "object"
+      },
+      "ReportSignature": {
+        "properties": {
+          "alg": {
+            "default": "EdDSA",
+            "title": "Alg",
+            "type": "string"
+          },
+          "digest": {
+            "title": "Digest",
+            "type": "string"
+          },
+          "key_id": {
+            "title": "Key Id",
+            "type": "string"
+          },
+          "value": {
+            "title": "Value",
+            "type": "string"
+          }
+        },
+        "required": [
+          "key_id",
+          "digest",
+          "value"
+        ],
+        "title": "ReportSignature",
+        "type": "object"
+      },
+      "ResponseStatus": {
+        "enum": [
+          "completed",
+          "require_approval",
+          "refused",
+          "error"
+        ],
+        "title": "ResponseStatus",
+        "type": "string"
+      },
+      "Run": {
+        "properties": {
+          "completed_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Completed At"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "environment": {
+            "$ref": "#/components/schemas/Environment"
+          },
+          "error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "probe_count": {
+            "default": 0,
+            "title": "Probe Count",
+            "type": "integer"
+          },
+          "requested_by": {
+            "title": "Requested By",
+            "type": "string"
+          },
+          "seed": {
+            "title": "Seed",
+            "type": "integer"
+          },
+          "started_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Started At"
+          },
+          "status": {
+            "$ref": "#/components/schemas/RunStatus"
+          },
+          "suite_digest": {
+            "title": "Suite Digest",
+            "type": "string"
+          },
+          "suite_name": {
+            "title": "Suite Name",
+            "type": "string"
+          },
+          "suite_version": {
+            "title": "Suite Version",
+            "type": "string"
+          },
+          "summary": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/RunSummary"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "target_id": {
+            "title": "Target Id",
+            "type": "string"
+          },
+          "target_version": {
+            "title": "Target Version",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "target_id",
+          "target_version",
+          "suite_name",
+          "suite_version",
+          "suite_digest",
+          "seed",
+          "environment",
+          "status",
+          "requested_by",
+          "created_at"
+        ],
+        "title": "Run",
+        "type": "object"
+      },
+      "RunList": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/Run"
+            },
+            "title": "Items",
+            "type": "array"
+          },
+          "limit": {
+            "title": "Limit",
+            "type": "integer"
+          },
+          "offset": {
+            "title": "Offset",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "items",
+          "limit",
+          "offset"
+        ],
+        "title": "RunList",
+        "type": "object"
+      },
+      "RunRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "environment": {
+            "$ref": "#/components/schemas/Environment",
+            "default": "staging"
+          },
+          "seed": {
+            "anyOf": [
+              {
+                "maximum": 2147483647.0,
+                "minimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Seed"
+          },
+          "suite": {
+            "description": "name or name@version",
+            "maxLength": 140,
+            "minLength": 1,
+            "title": "Suite",
+            "type": "string"
+          },
+          "target_id": {
+            "maxLength": 64,
+            "minLength": 1,
+            "title": "Target Id",
+            "type": "string"
+          },
+          "target_version": {
+            "title": "Target Version",
+            "type": "string"
+          }
+        },
+        "required": [
+          "target_id",
+          "target_version",
+          "suite"
+        ],
+        "title": "RunRequest",
+        "type": "object"
+      },
+      "RunStatus": {
+        "enum": [
+          "queued",
+          "running",
+          "completed",
+          "aborted",
+          "failed"
+        ],
+        "title": "RunStatus",
+        "type": "string"
+      },
+      "RunSummary": {
+        "properties": {
+          "categories": {
+            "items": {
+              "$ref": "#/components/schemas/CategoryStats"
+            },
+            "title": "Categories",
+            "type": "array"
+          },
+          "confidence": {
+            "title": "Confidence",
+            "type": "number"
+          },
+          "errors": {
+            "title": "Errors",
+            "type": "integer"
+          },
+          "failures": {
+            "title": "Failures",
+            "type": "integer"
+          },
+          "scenarios": {
+            "items": {
+              "$ref": "#/components/schemas/ScenarioStats"
+            },
+            "title": "Scenarios",
+            "type": "array"
+          },
+          "total": {
+            "title": "Total",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "confidence",
+          "total",
+          "failures",
+          "errors",
+          "categories",
+          "scenarios"
+        ],
+        "title": "RunSummary",
+        "type": "object"
+      },
+      "SampleSize": {
+        "properties": {
+          "confidence": {
+            "title": "Confidence",
+            "type": "number"
+          },
+          "max_failure_rate": {
+            "title": "Max Failure Rate",
+            "type": "number"
+          },
+          "zero_failure_probes": {
+            "title": "Zero Failure Probes",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "max_failure_rate",
+          "confidence",
+          "zero_failure_probes"
+        ],
+        "title": "SampleSize",
+        "type": "object"
+      },
+      "ScenarioFlip": {
+        "properties": {
+          "baseline_conclusive": {
+            "title": "Baseline Conclusive",
+            "type": "integer"
+          },
+          "baseline_failures": {
+            "title": "Baseline Failures",
+            "type": "integer"
+          },
+          "candidate_conclusive": {
+            "title": "Candidate Conclusive",
+            "type": "integer"
+          },
+          "candidate_failures": {
+            "title": "Candidate Failures",
+            "type": "integer"
+          },
+          "scenario_id": {
+            "title": "Scenario Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "scenario_id",
+          "baseline_failures",
+          "baseline_conclusive",
+          "candidate_failures",
+          "candidate_conclusive"
+        ],
+        "title": "ScenarioFlip",
+        "type": "object"
+      },
+      "ScenarioStats": {
+        "properties": {
+          "category": {
+            "$ref": "#/components/schemas/Category"
+          },
+          "conclusive": {
+            "title": "Conclusive",
+            "type": "integer"
+          },
+          "errors": {
+            "title": "Errors",
+            "type": "integer"
+          },
+          "failures": {
+            "title": "Failures",
+            "type": "integer"
+          },
+          "scenario_id": {
+            "title": "Scenario Id",
+            "type": "string"
+          },
+          "severity": {
+            "$ref": "#/components/schemas/Severity"
+          }
+        },
+        "required": [
+          "scenario_id",
+          "category",
+          "severity",
+          "conclusive",
+          "failures",
+          "errors"
+        ],
+        "title": "ScenarioStats",
+        "type": "object"
+      },
+      "ScenarioView": {
+        "properties": {
+          "category": {
+            "$ref": "#/components/schemas/Category"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "kind": {
+            "$ref": "#/components/schemas/ProbeKind"
+          },
+          "labels": {
+            "$ref": "#/components/schemas/Labels"
+          },
+          "probes": {
+            "title": "Probes",
+            "type": "integer"
+          },
+          "severity": {
+            "$ref": "#/components/schemas/Severity"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "title",
+          "category",
+          "severity",
+          "kind",
+          "labels",
+          "probes"
+        ],
+        "title": "ScenarioView",
+        "type": "object"
+      },
+      "Severity": {
+        "enum": [
+          "low",
+          "moderate",
+          "high",
+          "critical"
+        ],
+        "title": "Severity",
+        "type": "string"
+      },
+      "SignedReport": {
+        "properties": {
+          "report": {
+            "$ref": "#/components/schemas/EvaluationReport"
+          },
+          "signature": {
+            "$ref": "#/components/schemas/ReportSignature"
+          }
+        },
+        "required": [
+          "report",
+          "signature"
+        ],
+        "title": "SignedReport",
+        "type": "object"
+      },
+      "SuiteList": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/SuiteView"
+            },
+            "title": "Items",
+            "type": "array"
+          }
+        },
+        "required": [
+          "items"
+        ],
+        "title": "SuiteList",
+        "type": "object"
+      },
+      "SuiteView": {
+        "properties": {
+          "categories": {
+            "items": {
+              "$ref": "#/components/schemas/Category"
+            },
+            "title": "Categories",
+            "type": "array"
+          },
+          "description": {
+            "title": "Description",
+            "type": "string"
+          },
+          "digest": {
+            "title": "Digest",
+            "type": "string"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "probe_count": {
+            "title": "Probe Count",
+            "type": "integer"
+          },
+          "scenarios": {
+            "items": {
+              "$ref": "#/components/schemas/ScenarioView"
+            },
+            "title": "Scenarios",
+            "type": "array"
+          },
+          "version": {
+            "title": "Version",
+            "type": "string"
+          }
+        },
+        "required": [
+          "name",
+          "version",
+          "digest",
+          "description",
+          "probe_count",
+          "categories",
+          "scenarios"
+        ],
+        "title": "SuiteView",
+        "type": "object"
+      },
+      "Target": {
+        "additionalProperties": false,
+        "properties": {
+          "auth": {
+            "$ref": "#/components/schemas/TargetAuth",
+            "default": "none"
+          },
+          "auth_env": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Auth Env"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "created_by": {
+            "title": "Created By",
+            "type": "string"
+          },
+          "description": {
+            "default": "",
+            "maxLength": 1000,
+            "title": "Description",
+            "type": "string"
+          },
+          "endpoint": {
+            "anyOf": [
+              {
+                "maxLength": 2048,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Endpoint"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "kind": {
+            "$ref": "#/components/schemas/TargetKind"
+          },
+          "mcp_tool": {
+            "default": "run_task",
+            "maxLength": 128,
+            "minLength": 1,
+            "title": "Mcp Tool",
+            "type": "string"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "owner": {
+            "maxLength": 200,
+            "minLength": 2,
+            "title": "Owner",
+            "type": "string"
+          },
+          "reference_profile": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ReferenceProfile"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "risk": {
+            "$ref": "#/components/schemas/Severity",
+            "default": "moderate"
+          },
+          "timeout_s": {
+            "default": 30.0,
+            "exclusiveMinimum": 0.0,
+            "maximum": 300.0,
+            "title": "Timeout S",
+            "type": "number"
+          },
+          "trace_endpoint": {
+            "anyOf": [
+              {
+                "maxLength": 2048,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Trace Endpoint"
+          }
+        },
+        "required": [
+          "name",
+          "kind",
+          "owner",
+          "id",
+          "created_at",
+          "created_by"
+        ],
+        "title": "Target",
+        "type": "object"
+      },
+      "TargetAuth": {
+        "enum": [
+          "none",
+          "fabric",
+          "env_bearer"
+        ],
+        "title": "TargetAuth",
+        "type": "string"
+      },
+      "TargetKind": {
+        "enum": [
+          "http",
+          "mcp",
+          "a2a",
+          "reference"
+        ],
+        "title": "TargetKind",
+        "type": "string"
+      },
+      "TargetList": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/Target"
+            },
+            "title": "Items",
+            "type": "array"
+          },
+          "limit": {
+            "title": "Limit",
+            "type": "integer"
+          },
+          "offset": {
+            "title": "Offset",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "items",
+          "limit",
+          "offset"
+        ],
+        "title": "TargetList",
+        "type": "object"
+      },
+      "TargetRegistration": {
+        "additionalProperties": false,
+        "properties": {
+          "auth": {
+            "$ref": "#/components/schemas/TargetAuth",
+            "default": "none"
+          },
+          "auth_env": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Auth Env"
+          },
+          "description": {
+            "default": "",
+            "maxLength": 1000,
+            "title": "Description",
+            "type": "string"
+          },
+          "endpoint": {
+            "anyOf": [
+              {
+                "maxLength": 2048,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Endpoint"
+          },
+          "kind": {
+            "$ref": "#/components/schemas/TargetKind"
+          },
+          "mcp_tool": {
+            "default": "run_task",
+            "maxLength": 128,
+            "minLength": 1,
+            "title": "Mcp Tool",
+            "type": "string"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "owner": {
+            "maxLength": 200,
+            "minLength": 2,
+            "title": "Owner",
+            "type": "string"
+          },
+          "reference_profile": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ReferenceProfile"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "risk": {
+            "$ref": "#/components/schemas/Severity",
+            "default": "moderate"
+          },
+          "timeout_s": {
+            "default": 30.0,
+            "exclusiveMinimum": 0.0,
+            "maximum": 300.0,
+            "title": "Timeout S",
+            "type": "number"
+          },
+          "trace_endpoint": {
+            "anyOf": [
+              {
+                "maxLength": 2048,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Trace Endpoint"
+          }
+        },
+        "required": [
+          "name",
+          "kind",
+          "owner"
+        ],
+        "title": "TargetRegistration",
+        "type": "object"
+      },
+      "ToolCallRecord": {
+        "properties": {
+          "approval_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Approval Id"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "status": {
+            "$ref": "#/components/schemas/ToolCallStatus"
+          }
+        },
+        "required": [
+          "name",
+          "status"
+        ],
+        "title": "ToolCallRecord",
+        "type": "object"
+      },
+      "ToolCallStatus": {
+        "enum": [
+          "executed",
+          "proposed",
+          "blocked"
+        ],
+        "title": "ToolCallStatus",
+        "type": "string"
+      },
+      "ValidationError": {
+        "properties": {
+          "ctx": {
+            "title": "Context",
+            "type": "object"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "title": "Location",
+            "type": "array"
+          },
+          "msg": {
+            "title": "Message",
+            "type": "string"
+          },
+          "type": {
+            "title": "Error Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError",
+        "type": "object"
+      },
+      "VerdictOutcome": {
+        "enum": [
+          "pass",
+          "fail",
+          "abstain"
+        ],
+        "title": "VerdictOutcome",
+        "type": "string"
+      },
+      "Verification": {
+        "properties": {
+          "digest": {
+            "title": "Digest",
+            "type": "string"
+          },
+          "key_id": {
+            "title": "Key Id",
+            "type": "string"
+          },
+          "reason": {
+            "title": "Reason",
+            "type": "string"
+          },
+          "valid": {
+            "title": "Valid",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "valid",
+          "key_id",
+          "digest",
+          "reason"
+        ],
+        "title": "Verification",
+        "type": "object"
+      },
+      "VersionPoint": {
+        "properties": {
+          "decided_at": {
+            "format": "date-time",
+            "title": "Decided At",
+            "type": "string"
+          },
+          "decision_id": {
+            "title": "Decision Id",
+            "type": "string"
+          },
+          "failure_upper_bounds": {
+            "additionalProperties": {
+              "type": "number"
+            },
+            "title": "Failure Upper Bounds",
+            "type": "object"
+          },
+          "outcome": {
+            "$ref": "#/components/schemas/GateOutcome"
+          },
+          "run_id": {
+            "title": "Run Id",
+            "type": "string"
+          },
+          "suite": {
+            "title": "Suite",
+            "type": "string"
+          },
+          "target_version": {
+            "title": "Target Version",
+            "type": "string"
+          }
+        },
+        "required": [
+          "target_version",
+          "run_id",
+          "decision_id",
+          "outcome",
+          "decided_at",
+          "suite",
+          "failure_upper_bounds"
+        ],
+        "title": "VersionPoint",
+        "type": "object"
+      }
+    }
+  },
+  "info": {
+    "description": "Autonomous agent validation and release engineering: versioned benign probe suites, target adapters (HTTP, MCP, A2A), judges, confidence-interval scoring, regression tracking and a signed release gate.",
+    "title": "Continuous Red Teaming",
+    "version": "0.1.0"
+  },
+  "openapi": "3.1.0",
+  "paths": {
+    "/.well-known/agent-card.json": {
+      "get": {
+        "operationId": "card__well_known_agent_card_json_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Card  Well Known Agent Card Json Get",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Card",
+        "tags": [
+          "a2a"
+        ]
+      }
+    },
+    "/.well-known/report-signing-keys": {
+      "get": {
+        "description": "Public keys that verify evaluation report signatures (JWKS, OKP/Ed25519).",
+        "operationId": "signing_keys__well_known_report_signing_keys_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Signing Keys  Well Known Report Signing Keys Get",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Signing Keys",
+        "tags": [
+          "discovery"
+        ]
+      }
+    },
+    "/a2a": {
+      "post": {
+        "operationId": "a2a_a2a_post",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "A2A",
+        "tags": [
+          "a2a"
+        ]
+      }
+    },
+    "/v1/gate/decisions": {
+      "get": {
+        "operationId": "list_decisions_v1_gate_decisions_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "target_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maxLength": 64,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Target Id"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 100,
+              "maximum": 500,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "offset",
+            "required": false,
+            "schema": {
+              "default": 0,
+              "maximum": 1000000,
+              "minimum": 0,
+              "title": "Offset",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DecisionList"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "List Decisions",
+        "tags": [
+          "gate"
+        ]
+      }
+    },
+    "/v1/gate/decisions/{decision_id}": {
+      "get": {
+        "operationId": "get_decision_v1_gate_decisions__decision_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "decision_id",
+            "required": true,
+            "schema": {
+              "title": "Decision Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GateDecision"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Decision",
+        "tags": [
+          "gate"
+        ]
+      }
+    },
+    "/v1/gate/decisions/{decision_id}/approve": {
+      "post": {
+        "description": "Human sign-off for a decision that requires approval (two-person rule).",
+        "operationId": "approve_v1_gate_decisions__decision_id__approve_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "decision_id",
+            "required": true,
+            "schema": {
+              "title": "Decision Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ApproveRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GateDecision"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Approve",
+        "tags": [
+          "gate"
+        ]
+      }
+    },
+    "/v1/gate/decisions/{decision_id}/report": {
+      "get": {
+        "operationId": "get_report_v1_gate_decisions__decision_id__report_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "decision_id",
+            "required": true,
+            "schema": {
+              "title": "Decision Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SignedReport"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Report",
+        "tags": [
+          "gate"
+        ]
+      }
+    },
+    "/v1/gate/sample-size": {
+      "get": {
+        "description": "Conclusive probes a category needs before a zero-failure run can pass.",
+        "operationId": "sample_size_v1_gate_sample_size_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "max_failure_rate",
+            "required": true,
+            "schema": {
+              "exclusiveMaximum": 0.5,
+              "exclusiveMinimum": 0.0005,
+              "title": "Max Failure Rate",
+              "type": "number"
+            }
+          },
+          {
+            "in": "query",
+            "name": "confidence",
+            "required": false,
+            "schema": {
+              "default": 0.95,
+              "maximum": 0.999,
+              "minimum": 0.8,
+              "title": "Confidence",
+              "type": "number"
+            }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SampleSize"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Sample Size",
+        "tags": [
+          "gate"
+        ]
+      }
+    },
+    "/v1/judges/llm": {
+      "get": {
+        "operationId": "llm_judge_v1_judges_llm_get",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LlmJudgeStatus"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Llm Judge",
+        "tags": [
+          "judges"
+        ]
+      }
+    },
+    "/v1/judges/llm/calibration": {
+      "post": {
+        "operationId": "calibrate_llm_judge_v1_judges_llm_calibration_post",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CalibrateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CalibrationResult"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Calibrate Llm Judge",
+        "tags": [
+          "judges"
+        ]
+      }
+    },
+    "/v1/reports/verify": {
+      "post": {
+        "operationId": "verify_report_v1_reports_verify_post",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SignedReport"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Verification"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Verify Report",
+        "tags": [
+          "gate"
+        ]
+      }
+    },
+    "/v1/runs": {
+      "get": {
+        "operationId": "list_runs_v1_runs_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "target_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maxLength": 64,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Target Id"
+            }
+          },
+          {
+            "in": "query",
+            "name": "status",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/RunStatus"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Status"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 100,
+              "maximum": 500,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "offset",
+            "required": false,
+            "schema": {
+              "default": 0,
+              "maximum": 1000000,
+              "minimum": 0,
+              "title": "Offset",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RunList"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "List Runs",
+        "tags": [
+          "runs"
+        ]
+      },
+      "post": {
+        "operationId": "start_run_v1_runs_post",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RunRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "202": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Run"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Start Run",
+        "tags": [
+          "runs"
+        ]
+      }
+    },
+    "/v1/runs/{run_id}": {
+      "get": {
+        "operationId": "get_run_v1_runs__run_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "run_id",
+            "required": true,
+            "schema": {
+              "title": "Run Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Run"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Run",
+        "tags": [
+          "runs"
+        ]
+      }
+    },
+    "/v1/runs/{run_id}/gate": {
+      "post": {
+        "description": "Evaluate the release gate for a completed run and issue a signed report.",
+        "operationId": "evaluate_gate_v1_runs__run_id__gate_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "run_id",
+            "required": true,
+            "schema": {
+              "title": "Run Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GateDecision"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Evaluate Gate",
+        "tags": [
+          "gate"
+        ]
+      }
+    },
+    "/v1/runs/{run_id}/results": {
+      "get": {
+        "operationId": "run_results_v1_runs__run_id__results_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "run_id",
+            "required": true,
+            "schema": {
+              "title": "Run Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "failed_only",
+            "required": false,
+            "schema": {
+              "default": false,
+              "title": "Failed Only",
+              "type": "boolean"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 100,
+              "maximum": 500,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "offset",
+            "required": false,
+            "schema": {
+              "default": 0,
+              "maximum": 1000000,
+              "minimum": 0,
+              "title": "Offset",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProbeResultList"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Run Results",
+        "tags": [
+          "runs"
+        ]
+      }
+    },
+    "/v1/suites": {
+      "get": {
+        "operationId": "list_suites_v1_suites_get",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuiteList"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "List Suites",
+        "tags": [
+          "suites"
+        ]
+      }
+    },
+    "/v1/suites/{reference}": {
+      "get": {
+        "operationId": "get_suite_v1_suites__reference__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "reference",
+            "required": true,
+            "schema": {
+              "title": "Reference",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuiteView"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Suite",
+        "tags": [
+          "suites"
+        ]
+      }
+    },
+    "/v1/suites/{reference}/expansion": {
+      "get": {
+        "description": "Preview the deterministic probes a run with this seed will send.",
+        "operationId": "expand_suite_v1_suites__reference__expansion_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "reference",
+            "required": true,
+            "schema": {
+              "title": "Reference",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "seed",
+            "required": false,
+            "schema": {
+              "default": 0,
+              "maximum": 2147483647,
+              "minimum": 0,
+              "title": "Seed",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 50,
+              "maximum": 500,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Expansion"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Expand Suite",
+        "tags": [
+          "suites"
+        ]
+      }
+    },
+    "/v1/targets": {
+      "get": {
+        "operationId": "list_targets_v1_targets_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 100,
+              "maximum": 500,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "offset",
+            "required": false,
+            "schema": {
+              "default": 0,
+              "maximum": 1000000,
+              "minimum": 0,
+              "title": "Offset",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TargetList"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "List Targets",
+        "tags": [
+          "targets"
+        ]
+      },
+      "post": {
+        "operationId": "register_target_v1_targets_post",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TargetRegistration"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Target"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Register Target",
+        "tags": [
+          "targets"
+        ]
+      }
+    },
+    "/v1/targets/{target_id}": {
+      "get": {
+        "operationId": "get_target_v1_targets__target_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "target_id",
+            "required": true,
+            "schema": {
+              "title": "Target Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Target"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Target",
+        "tags": [
+          "targets"
+        ]
+      }
+    },
+    "/v1/targets/{target_id}/comparison": {
+      "get": {
+        "operationId": "compare_versions_v1_targets__target_id__comparison_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "target_id",
+            "required": true,
+            "schema": {
+              "title": "Target Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "baseline",
+            "required": true,
+            "schema": {
+              "maxLength": 64,
+              "minLength": 1,
+              "title": "Baseline",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "candidate",
+            "required": true,
+            "schema": {
+              "maxLength": 64,
+              "minLength": 1,
+              "title": "Candidate",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "suite",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maxLength": 64,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Suite"
+            }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RegressionReport"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Compare Versions",
+        "tags": [
+          "regression"
+        ]
+      }
+    },
+    "/v1/targets/{target_id}/history": {
+      "get": {
+        "operationId": "history_v1_targets__target_id__history_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "target_id",
+            "required": true,
+            "schema": {
+              "title": "Target Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 50,
+              "maximum": 500,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/History"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "History",
+        "tags": [
+          "regression"
+        ]
+      }
+    }
+  }
+}

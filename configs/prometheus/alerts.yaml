@@ -1,0 +1,78 @@
+# PrometheusRule-compatible alert rules. Load with the Prometheus Operator
+# (wrap in a PrometheusRule) or a rule_files entry.
+# SLOs (docs/architecture/agent-specification.md):
+#   availability  99.9% of API requests succeed (non-5xx)
+#   latency       p99 of read endpoints < 250 ms
+#   freshness     every gated run finishes within 30 minutes of being queued
+groups:
+  - name: continuous-red-teaming.slo
+    rules:
+      - record: crt:request_errors:ratio_5m
+        expr: |
+          sum(rate(crt_http_request_duration_seconds_count{status=~"5.."}[5m]))
+          /
+          clamp_min(sum(rate(crt_http_request_duration_seconds_count[5m])), 1e-9)
+
+      - alert: RedTeamErrorBudgetBurnFast
+        expr: crt:request_errors:ratio_5m > (14.4 * 0.001)
+        for: 5m
+        labels: {severity: page}
+        annotations:
+          summary: Release gate API burning its error budget 14x faster than sustainable
+          runbook: docs/runbooks/incident-response.md#elevated-5xx
+
+      - alert: RedTeamReadLatencyHigh
+        expr: |
+          histogram_quantile(0.99, sum by (le) (
+            rate(crt_http_request_duration_seconds_bucket{method="GET"}[5m])
+          )) > 0.25
+        for: 10m
+        labels: {severity: ticket}
+        annotations:
+          summary: p99 read latency above 250 ms
+          runbook: docs/runbooks/monitoring.md#latency
+
+      - alert: RedTeamRunsStuck
+        expr: max_over_time(crt_runs_active[30m]) > 0 and changes(crt_runs_total[30m]) == 0
+        for: 5m
+        labels: {severity: ticket}
+        annotations:
+          summary: Runs have been executing for 30 minutes without any finishing
+          runbook: docs/runbooks/monitoring.md#stuck-runs
+
+  - name: continuous-red-teaming.validation
+    rules:
+      - alert: RedTeamTargetErrorsHigh
+        expr: |
+          sum(rate(crt_probes_total{outcome="error"}[15m]))
+          /
+          clamp_min(sum(rate(crt_probes_total[15m])), 1e-9) > 0.2
+        for: 15m
+        labels: {severity: ticket}
+        annotations:
+          summary: More than 20% of probes end in target errors; gate results will be inconclusive
+          runbook: docs/runbooks/incident-response.md#target-errors
+
+      - alert: RedTeamGateFailuresSpike
+        expr: increase(crt_gate_decisions_total{outcome="fail"}[1h]) > 5
+        for: 0m
+        labels: {severity: ticket}
+        annotations:
+          summary: Several releases blocked in the last hour; check for a suite or policy change
+          runbook: docs/runbooks/incident-response.md#gate-failure-spike
+
+      - alert: RedTeamAccessDeniedSpike
+        expr: sum(rate(crt_access_denied_total[10m])) > 0.2
+        for: 10m
+        labels: {severity: page}
+        annotations:
+          summary: Sustained refused requests; possible credential misuse
+          runbook: docs/runbooks/incident-response.md#access-denied-spike
+
+      - alert: RedTeamNotReady
+        expr: sum(up{job="continuous-red-teaming"}) < 2
+        for: 5m
+        labels: {severity: page}
+        annotations:
+          summary: Fewer than two platform replicas are being scraped
+          runbook: docs/runbooks/incident-response.md#replicas-down

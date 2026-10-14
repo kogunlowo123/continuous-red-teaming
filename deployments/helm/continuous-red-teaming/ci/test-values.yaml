@@ -1,0 +1,33 @@
+# Values used by CI to render and schema-validate the chart (helm lint,
+# helm template | kubeconform). They describe a complete, valid deployment.
+platform:
+  publicUrl: https://redteam.agents.ci.internal
+  trustedIssuers:
+    - issuer: https://login.ci.internal
+      jwks_url: https://login.ci.internal/jwks
+      audience: continuous-red-teaming
+      kind: user
+    - issuer: https://token.actions.githubusercontent.com
+      jwks_url: https://token.actions.githubusercontent.com/.well-known/jwks
+      audience: continuous-red-teaming
+      kind: pipeline
+      default_roles: [release-pipeline]
+      subject_patterns: ["repo:ci-org/*:ref:refs/heads/main"]
+  targetAllowedHosts: ["*.agents.ci.internal"]
+  mcpAllowedHosts: ["redteam.agents.ci.internal"]
+  fabric:
+    url: https://identity.agents.ci.internal
+    issuer: https://identity.agents.ci.internal
+    clientId: spiffe://agents.ci.internal/agent/platform/red-team
+  llmJudge:
+    enabled: true
+    envSecret: continuous-red-teaming-llm
+secrets:
+  auditKeyFile: audit-2026-10.pem
+  targetTokens: continuous-red-teaming-target-tokens
+ingress:
+  enabled: true
+  className: nginx
+  host: redteam.agents.ci.internal
+serviceMonitor:
+  enabled: true

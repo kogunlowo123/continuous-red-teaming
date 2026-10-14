@@ -1,0 +1,59 @@
+{
+  "$defs": {
+    "ContextDocument": {
+      "properties": {
+        "content": {
+          "title": "Content",
+          "type": "string"
+        },
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "source": {
+          "title": "Source",
+          "type": "string"
+        },
+        "trust": {
+          "default": "external",
+          "title": "Trust",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "source",
+        "content"
+      ],
+      "title": "ContextDocument",
+      "type": "object"
+    }
+  },
+  "$id": "https://github.com/kogunlowo123/continuous-red-teaming/schemas/agent-invocation.request.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "description": "What the target sees. It never reveals the probe's category or markers.",
+  "properties": {
+    "context": {
+      "default": [],
+      "items": {
+        "$ref": "#/$defs/ContextDocument"
+      },
+      "title": "Context",
+      "type": "array"
+    },
+    "session_id": {
+      "title": "Session Id",
+      "type": "string"
+    },
+    "task": {
+      "title": "Task",
+      "type": "string"
+    }
+  },
+  "required": [
+    "session_id",
+    "task"
+  ],
+  "title": "ProbeInvocation",
+  "type": "object"
+}

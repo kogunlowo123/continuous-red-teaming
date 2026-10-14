@@ -1,0 +1,720 @@
+{
+  "$defs": {
+    "Approval": {
+      "properties": {
+        "approver": {
+          "title": "Approver",
+          "type": "string"
+        },
+        "at": {
+          "format": "date-time",
+          "title": "At",
+          "type": "string"
+        },
+        "audit_hash": {
+          "title": "Audit Hash",
+          "type": "string"
+        },
+        "reason": {
+          "title": "Reason",
+          "type": "string"
+        }
+      },
+      "required": [
+        "approver",
+        "reason",
+        "at",
+        "audit_hash"
+      ],
+      "title": "Approval",
+      "type": "object"
+    },
+    "Category": {
+      "enum": [
+        "marker_leakage",
+        "secret_echo",
+        "forbidden_tool",
+        "approval_bypass",
+        "policy_violation"
+      ],
+      "title": "Category",
+      "type": "string"
+    },
+    "CategoryAssessment": {
+      "properties": {
+        "category": {
+          "$ref": "#/$defs/Category"
+        },
+        "conclusive": {
+          "title": "Conclusive",
+          "type": "integer"
+        },
+        "error_rate": {
+          "title": "Error Rate",
+          "type": "number"
+        },
+        "max_failure_rate": {
+          "title": "Max Failure Rate",
+          "type": "number"
+        },
+        "observed_rate": {
+          "title": "Observed Rate",
+          "type": "number"
+        },
+        "reason": {
+          "title": "Reason",
+          "type": "string"
+        },
+        "required_probes": {
+          "title": "Required Probes",
+          "type": "integer"
+        },
+        "upper_bound": {
+          "title": "Upper Bound",
+          "type": "number"
+        },
+        "verdict": {
+          "$ref": "#/$defs/CategoryVerdict"
+        }
+      },
+      "required": [
+        "category",
+        "verdict",
+        "max_failure_rate",
+        "observed_rate",
+        "upper_bound",
+        "conclusive",
+        "required_probes",
+        "error_rate",
+        "reason"
+      ],
+      "title": "CategoryAssessment",
+      "type": "object"
+    },
+    "CategoryStats": {
+      "properties": {
+        "bootstrap_high": {
+          "title": "Bootstrap High",
+          "type": "number"
+        },
+        "bootstrap_low": {
+          "title": "Bootstrap Low",
+          "type": "number"
+        },
+        "category": {
+          "$ref": "#/$defs/Category"
+        },
+        "conclusive": {
+          "title": "Conclusive",
+          "type": "integer"
+        },
+        "critical_failures": {
+          "title": "Critical Failures",
+          "type": "integer"
+        },
+        "errors": {
+          "title": "Errors",
+          "type": "integer"
+        },
+        "failure_rate": {
+          "title": "Failure Rate",
+          "type": "number"
+        },
+        "failures": {
+          "title": "Failures",
+          "type": "integer"
+        },
+        "probes": {
+          "title": "Probes",
+          "type": "integer"
+        },
+        "scenarios": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Scenarios",
+          "type": "array"
+        },
+        "wilson_high": {
+          "title": "Wilson High",
+          "type": "number"
+        },
+        "wilson_low": {
+          "title": "Wilson Low",
+          "type": "number"
+        }
+      },
+      "required": [
+        "category",
+        "probes",
+        "conclusive",
+        "failures",
+        "errors",
+        "critical_failures",
+        "failure_rate",
+        "wilson_low",
+        "wilson_high",
+        "bootstrap_low",
+        "bootstrap_high",
+        "scenarios"
+      ],
+      "title": "CategoryStats",
+      "type": "object"
+    },
+    "CategoryVerdict": {
+      "enum": [
+        "pass",
+        "breach",
+        "insufficient_evidence"
+      ],
+      "title": "CategoryVerdict",
+      "type": "string"
+    },
+    "Environment": {
+      "enum": [
+        "development",
+        "staging",
+        "production"
+      ],
+      "title": "Environment",
+      "type": "string"
+    },
+    "EvaluationReport": {
+      "description": "The release evidence. Signed as canonical JSON; see gate.report.",
+      "properties": {
+        "approvals": {
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/Approval"
+          },
+          "title": "Approvals",
+          "type": "array"
+        },
+        "assessments": {
+          "items": {
+            "$ref": "#/$defs/CategoryAssessment"
+          },
+          "title": "Assessments",
+          "type": "array"
+        },
+        "decision_policy": {
+          "$ref": "#/$defs/PolicyReference"
+        },
+        "decision_reason": {
+          "title": "Decision Reason",
+          "type": "string"
+        },
+        "environment": {
+          "$ref": "#/$defs/Environment"
+        },
+        "gate_policy": {
+          "$ref": "#/$defs/PolicyReference"
+        },
+        "generated_at": {
+          "format": "date-time",
+          "title": "Generated At",
+          "type": "string"
+        },
+        "llm_judge": {
+          "$ref": "#/$defs/LlmJudgeStatus"
+        },
+        "matched_rules": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Matched Rules",
+          "type": "array"
+        },
+        "outcome": {
+          "$ref": "#/$defs/GateOutcome"
+        },
+        "platform_version": {
+          "title": "Platform Version",
+          "type": "string"
+        },
+        "regression": {
+          "$ref": "#/$defs/RegressionReport"
+        },
+        "report_id": {
+          "title": "Report Id",
+          "type": "string"
+        },
+        "requested_by": {
+          "title": "Requested By",
+          "type": "string"
+        },
+        "run_id": {
+          "title": "Run Id",
+          "type": "string"
+        },
+        "seed": {
+          "title": "Seed",
+          "type": "integer"
+        },
+        "suite_digest": {
+          "title": "Suite Digest",
+          "type": "string"
+        },
+        "suite_name": {
+          "title": "Suite Name",
+          "type": "string"
+        },
+        "suite_version": {
+          "title": "Suite Version",
+          "type": "string"
+        },
+        "summary": {
+          "$ref": "#/$defs/RunSummary"
+        },
+        "target_id": {
+          "title": "Target Id",
+          "type": "string"
+        },
+        "target_kind": {
+          "$ref": "#/$defs/TargetKind"
+        },
+        "target_name": {
+          "title": "Target Name",
+          "type": "string"
+        },
+        "target_risk": {
+          "$ref": "#/$defs/Severity"
+        },
+        "target_version": {
+          "title": "Target Version",
+          "type": "string"
+        }
+      },
+      "required": [
+        "report_id",
+        "platform_version",
+        "generated_at",
+        "target_id",
+        "target_name",
+        "target_kind",
+        "target_version",
+        "target_risk",
+        "run_id",
+        "seed",
+        "environment",
+        "suite_name",
+        "suite_version",
+        "suite_digest",
+        "gate_policy",
+        "decision_policy",
+        "matched_rules",
+        "decision_reason",
+        "summary",
+        "assessments",
+        "regression",
+        "llm_judge",
+        "outcome",
+        "requested_by"
+      ],
+      "title": "EvaluationReport",
+      "type": "object"
+    },
+    "GateOutcome": {
+      "enum": [
+        "pass",
+        "fail",
+        "require_approval",
+        "approved"
+      ],
+      "title": "GateOutcome",
+      "type": "string"
+    },
+    "LlmJudgeStatus": {
+      "properties": {
+        "binding": {
+          "default": false,
+          "title": "Binding",
+          "type": "boolean"
+        },
+        "calibrated": {
+          "title": "Calibrated",
+          "type": "boolean"
+        },
+        "enabled": {
+          "title": "Enabled",
+          "type": "boolean"
+        },
+        "kappa": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Kappa"
+        }
+      },
+      "required": [
+        "enabled",
+        "calibrated"
+      ],
+      "title": "LlmJudgeStatus",
+      "type": "object"
+    },
+    "PolicyReference": {
+      "properties": {
+        "digest": {
+          "title": "Digest",
+          "type": "string"
+        },
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "version": {
+          "title": "Version",
+          "type": "string"
+        }
+      },
+      "required": [
+        "name",
+        "version",
+        "digest"
+      ],
+      "title": "PolicyReference",
+      "type": "object"
+    },
+    "RegressionFinding": {
+      "properties": {
+        "baseline_rate": {
+          "title": "Baseline Rate",
+          "type": "number"
+        },
+        "candidate_rate": {
+          "title": "Candidate Rate",
+          "type": "number"
+        },
+        "category": {
+          "$ref": "#/$defs/Category"
+        },
+        "difference": {
+          "title": "Difference",
+          "type": "number"
+        },
+        "difference_high": {
+          "title": "Difference High",
+          "type": "number"
+        },
+        "difference_low": {
+          "title": "Difference Low",
+          "type": "number"
+        },
+        "significant": {
+          "title": "Significant",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "category",
+        "baseline_rate",
+        "candidate_rate",
+        "difference",
+        "difference_low",
+        "difference_high",
+        "significant"
+      ],
+      "title": "RegressionFinding",
+      "type": "object"
+    },
+    "RegressionReport": {
+      "properties": {
+        "baseline_run_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Baseline Run Id"
+        },
+        "baseline_version": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Baseline Version"
+        },
+        "candidate_run_id": {
+          "title": "Candidate Run Id",
+          "type": "string"
+        },
+        "candidate_version": {
+          "title": "Candidate Version",
+          "type": "string"
+        },
+        "categories": {
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/RegressionFinding"
+          },
+          "title": "Categories",
+          "type": "array"
+        },
+        "flips": {
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/ScenarioFlip"
+          },
+          "title": "Flips",
+          "type": "array"
+        }
+      },
+      "required": [
+        "candidate_run_id",
+        "candidate_version"
+      ],
+      "title": "RegressionReport",
+      "type": "object"
+    },
+    "ReportSignature": {
+      "properties": {
+        "alg": {
+          "default": "EdDSA",
+          "title": "Alg",
+          "type": "string"
+        },
+        "digest": {
+          "title": "Digest",
+          "type": "string"
+        },
+        "key_id": {
+          "title": "Key Id",
+          "type": "string"
+        },
+        "value": {
+          "title": "Value",
+          "type": "string"
+        }
+      },
+      "required": [
+        "key_id",
+        "digest",
+        "value"
+      ],
+      "title": "ReportSignature",
+      "type": "object"
+    },
+    "RunSummary": {
+      "properties": {
+        "categories": {
+          "items": {
+            "$ref": "#/$defs/CategoryStats"
+          },
+          "title": "Categories",
+          "type": "array"
+        },
+        "confidence": {
+          "title": "Confidence",
+          "type": "number"
+        },
+        "errors": {
+          "title": "Errors",
+          "type": "integer"
+        },
+        "failures": {
+          "title": "Failures",
+          "type": "integer"
+        },
+        "scenarios": {
+          "items": {
+            "$ref": "#/$defs/ScenarioStats"
+          },
+          "title": "Scenarios",
+          "type": "array"
+        },
+        "total": {
+          "title": "Total",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "confidence",
+        "total",
+        "failures",
+        "errors",
+        "categories",
+        "scenarios"
+      ],
+      "title": "RunSummary",
+      "type": "object"
+    },
+    "ScenarioFlip": {
+      "properties": {
+        "baseline_conclusive": {
+          "title": "Baseline Conclusive",
+          "type": "integer"
+        },
+        "baseline_failures": {
+          "title": "Baseline Failures",
+          "type": "integer"
+        },
+        "candidate_conclusive": {
+          "title": "Candidate Conclusive",
+          "type": "integer"
+        },
+        "candidate_failures": {
+          "title": "Candidate Failures",
+          "type": "integer"
+        },
+        "scenario_id": {
+          "title": "Scenario Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "scenario_id",
+        "baseline_failures",
+        "baseline_conclusive",
+        "candidate_failures",
+        "candidate_conclusive"
+      ],
+      "title": "ScenarioFlip",
+      "type": "object"
+    },
+    "ScenarioStats": {
+      "properties": {
+        "category": {
+          "$ref": "#/$defs/Category"
+        },
+        "conclusive": {
+          "title": "Conclusive",
+          "type": "integer"
+        },
+        "errors": {
+          "title": "Errors",
+          "type": "integer"
+        },
+        "failures": {
+          "title": "Failures",
+          "type": "integer"
+        },
+        "scenario_id": {
+          "title": "Scenario Id",
+          "type": "string"
+        },
+        "severity": {
+          "$ref": "#/$defs/Severity"
+        }
+      },
+      "required": [
+        "scenario_id",
+        "category",
+        "severity",
+        "conclusive",
+        "failures",
+        "errors"
+      ],
+      "title": "ScenarioStats",
+      "type": "object"
+    },
+    "Severity": {
+      "enum": [
+        "low",
+        "moderate",
+        "high",
+        "critical"
+      ],
+      "title": "Severity",
+      "type": "string"
+    },
+    "SignedReport": {
+      "properties": {
+        "report": {
+          "$ref": "#/$defs/EvaluationReport"
+        },
+        "signature": {
+          "$ref": "#/$defs/ReportSignature"
+        }
+      },
+      "required": [
+        "report",
+        "signature"
+      ],
+      "title": "SignedReport",
+      "type": "object"
+    },
+    "TargetKind": {
+      "enum": [
+        "http",
+        "mcp",
+        "a2a",
+        "reference"
+      ],
+      "title": "TargetKind",
+      "type": "string"
+    }
+  },
+  "$id": "https://github.com/kogunlowo123/continuous-red-teaming/schemas/gate-decision.response.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "properties": {
+    "audit_hash": {
+      "title": "Audit Hash",
+      "type": "string"
+    },
+    "audit_sequence": {
+      "title": "Audit Sequence",
+      "type": "integer"
+    },
+    "created_at": {
+      "format": "date-time",
+      "title": "Created At",
+      "type": "string"
+    },
+    "id": {
+      "title": "Id",
+      "type": "string"
+    },
+    "outcome": {
+      "$ref": "#/$defs/GateOutcome"
+    },
+    "requested_by": {
+      "title": "Requested By",
+      "type": "string"
+    },
+    "run_id": {
+      "title": "Run Id",
+      "type": "string"
+    },
+    "signed_report": {
+      "$ref": "#/$defs/SignedReport"
+    },
+    "target_id": {
+      "title": "Target Id",
+      "type": "string"
+    },
+    "target_version": {
+      "title": "Target Version",
+      "type": "string"
+    }
+  },
+  "required": [
+    "id",
+    "run_id",
+    "target_id",
+    "target_version",
+    "outcome",
+    "requested_by",
+    "created_at",
+    "audit_sequence",
+    "audit_hash",
+    "signed_report"
+  ],
+  "title": "GateDecision",
+  "type": "object"
+}

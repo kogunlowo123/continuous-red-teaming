@@ -1,0 +1,401 @@
+{
+  "$defs": {
+    "Category": {
+      "enum": [
+        "marker_leakage",
+        "secret_echo",
+        "forbidden_tool",
+        "approval_bypass",
+        "policy_violation"
+      ],
+      "title": "Category",
+      "type": "string"
+    },
+    "Condition": {
+      "properties": {
+        "attribute": {
+          "description": "Dotted path, e.g. subject.roles or resource.owner",
+          "title": "Attribute",
+          "type": "string"
+        },
+        "operator": {
+          "$ref": "#/$defs/Operator"
+        },
+        "value": {
+          "default": null,
+          "title": "Value"
+        }
+      },
+      "required": [
+        "attribute",
+        "operator"
+      ],
+      "title": "Condition",
+      "type": "object"
+    },
+    "ContextTemplate": {
+      "additionalProperties": false,
+      "properties": {
+        "content": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "title": "Content",
+          "type": "string"
+        },
+        "source": {
+          "maxLength": 120,
+          "minLength": 1,
+          "title": "Source",
+          "type": "string"
+        }
+      },
+      "required": [
+        "source",
+        "content"
+      ],
+      "title": "ContextTemplate",
+      "type": "object"
+    },
+    "Decision": {
+      "description": "Outcome of a policy or security evaluation.",
+      "enum": [
+        "allow",
+        "deny",
+        "require_approval"
+      ],
+      "title": "Decision",
+      "type": "string"
+    },
+    "JudgeName": {
+      "enum": [
+        "marker_leakage",
+        "forbidden_tool",
+        "policy_violation",
+        "approval_bypass",
+        "llm_rubric"
+      ],
+      "title": "JudgeName",
+      "type": "string"
+    },
+    "Labels": {
+      "additionalProperties": false,
+      "properties": {
+        "mitre_atlas": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Mitre Atlas",
+          "type": "array"
+        },
+        "owasp_llm": {
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Owasp Llm",
+          "type": "array"
+        }
+      },
+      "required": [
+        "owasp_llm"
+      ],
+      "title": "Labels",
+      "type": "object"
+    },
+    "Operator": {
+      "enum": [
+        "eq",
+        "ne",
+        "in",
+        "not_in",
+        "contains",
+        "contains_any",
+        "gt",
+        "gte",
+        "lt",
+        "lte",
+        "exists",
+        "eq_attr"
+      ],
+      "title": "Operator",
+      "type": "string"
+    },
+    "PolicySet": {
+      "properties": {
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "rules": {
+          "items": {
+            "$ref": "#/$defs/Rule"
+          },
+          "title": "Rules",
+          "type": "array"
+        },
+        "version": {
+          "title": "Version",
+          "type": "string"
+        }
+      },
+      "required": [
+        "name",
+        "version",
+        "rules"
+      ],
+      "title": "PolicySet",
+      "type": "object"
+    },
+    "ProbeKind": {
+      "enum": [
+        "canary_in_context",
+        "secret_marker",
+        "forbidden_tool",
+        "out_of_scope_action"
+      ],
+      "title": "ProbeKind",
+      "type": "string"
+    },
+    "ProbeSpec": {
+      "additionalProperties": false,
+      "properties": {
+        "action_tools": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Action Tools",
+          "type": "array"
+        },
+        "context": {
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/ContextTemplate"
+          },
+          "maxItems": 8,
+          "title": "Context",
+          "type": "array"
+        },
+        "forbidden_tools": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Forbidden Tools",
+          "type": "array"
+        },
+        "kind": {
+          "$ref": "#/$defs/ProbeKind"
+        },
+        "task": {
+          "maxLength": 2000,
+          "minLength": 1,
+          "title": "Task",
+          "type": "string"
+        }
+      },
+      "required": [
+        "kind",
+        "task"
+      ],
+      "title": "ProbeSpec",
+      "type": "object"
+    },
+    "Rule": {
+      "properties": {
+        "actions": {
+          "description": "Glob patterns, e.g. tool:fhir.*",
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Actions",
+          "type": "array"
+        },
+        "conditions": {
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/Condition"
+          },
+          "title": "Conditions",
+          "type": "array"
+        },
+        "description": {
+          "default": "",
+          "title": "Description",
+          "type": "string"
+        },
+        "effect": {
+          "$ref": "#/$defs/Decision"
+        },
+        "id": {
+          "minLength": 1,
+          "title": "Id",
+          "type": "string"
+        },
+        "resource_types": {
+          "default": [
+            "*"
+          ],
+          "items": {
+            "type": "string"
+          },
+          "title": "Resource Types",
+          "type": "array"
+        }
+      },
+      "required": [
+        "id",
+        "effect",
+        "actions"
+      ],
+      "title": "Rule",
+      "type": "object"
+    },
+    "Scenario": {
+      "additionalProperties": false,
+      "properties": {
+        "category": {
+          "$ref": "#/$defs/Category"
+        },
+        "description": {
+          "default": "",
+          "maxLength": 2000,
+          "title": "Description",
+          "type": "string"
+        },
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "judges": {
+          "anyOf": [
+            {
+              "items": {
+                "$ref": "#/$defs/JudgeName"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Judges"
+        },
+        "labels": {
+          "$ref": "#/$defs/Labels"
+        },
+        "parameters": {
+          "additionalProperties": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "title": "Parameters",
+          "type": "object"
+        },
+        "probe": {
+          "$ref": "#/$defs/ProbeSpec"
+        },
+        "repeats": {
+          "default": 1,
+          "maximum": 50,
+          "minimum": 1,
+          "title": "Repeats",
+          "type": "integer"
+        },
+        "samples": {
+          "anyOf": [
+            {
+              "maximum": 10000,
+              "minimum": 1,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Samples"
+        },
+        "severity": {
+          "$ref": "#/$defs/Severity"
+        },
+        "title": {
+          "maxLength": 200,
+          "minLength": 5,
+          "title": "Title",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "title",
+        "category",
+        "severity",
+        "labels",
+        "probe"
+      ],
+      "title": "Scenario",
+      "type": "object"
+    },
+    "Severity": {
+      "enum": [
+        "low",
+        "moderate",
+        "high",
+        "critical"
+      ],
+      "title": "Severity",
+      "type": "string"
+    }
+  },
+  "$id": "https://github.com/kogunlowo123/continuous-red-teaming/schemas/suite.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "description": {
+      "default": "",
+      "maxLength": 4000,
+      "title": "Description",
+      "type": "string"
+    },
+    "name": {
+      "title": "Name",
+      "type": "string"
+    },
+    "scenarios": {
+      "items": {
+        "$ref": "#/$defs/Scenario"
+      },
+      "minItems": 1,
+      "title": "Scenarios",
+      "type": "array"
+    },
+    "tool_policy": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/PolicySet"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "version": {
+      "title": "Version",
+      "type": "string"
+    }
+  },
+  "required": [
+    "name",
+    "version",
+    "scenarios"
+  ],
+  "title": "Suite",
+  "type": "object"
+}

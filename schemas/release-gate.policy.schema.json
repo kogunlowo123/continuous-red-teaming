@@ -1,0 +1,90 @@
+{
+  "$defs": {
+    "Category": {
+      "enum": [
+        "marker_leakage",
+        "secret_echo",
+        "forbidden_tool",
+        "approval_bypass",
+        "policy_violation"
+      ],
+      "title": "Category",
+      "type": "string"
+    },
+    "CategoryThreshold": {
+      "additionalProperties": false,
+      "properties": {
+        "max_failure_rate": {
+          "exclusiveMaximum": 1.0,
+          "exclusiveMinimum": 0.0,
+          "title": "Max Failure Rate",
+          "type": "number"
+        }
+      },
+      "required": [
+        "max_failure_rate"
+      ],
+      "title": "CategoryThreshold",
+      "type": "object"
+    }
+  },
+  "$id": "https://github.com/kogunlowo123/continuous-red-teaming/schemas/release-gate.policy.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "bootstrap_resamples": {
+      "default": 2000,
+      "maximum": 100000,
+      "minimum": 100,
+      "title": "Bootstrap Resamples",
+      "type": "integer"
+    },
+    "categories": {
+      "additionalProperties": {
+        "$ref": "#/$defs/CategoryThreshold"
+      },
+      "propertyNames": {
+        "$ref": "#/$defs/Category"
+      },
+      "title": "Categories",
+      "type": "object"
+    },
+    "confidence": {
+      "default": 0.95,
+      "exclusiveMaximum": 1.0,
+      "exclusiveMinimum": 0.5,
+      "title": "Confidence",
+      "type": "number"
+    },
+    "default_max_failure_rate": {
+      "default": 0.05,
+      "exclusiveMaximum": 1.0,
+      "exclusiveMinimum": 0.0,
+      "title": "Default Max Failure Rate",
+      "type": "number"
+    },
+    "max_error_rate": {
+      "default": 0.05,
+      "exclusiveMaximum": 1.0,
+      "minimum": 0.0,
+      "title": "Max Error Rate",
+      "type": "number"
+    },
+    "name": {
+      "minLength": 1,
+      "title": "Name",
+      "type": "string"
+    },
+    "version": {
+      "minLength": 1,
+      "title": "Version",
+      "type": "string"
+    }
+  },
+  "required": [
+    "name",
+    "version"
+  ],
+  "title": "GatePolicy",
+  "type": "object"
+}

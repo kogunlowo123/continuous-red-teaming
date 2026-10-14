@@ -1,0 +1,86 @@
+{
+  "$defs": {
+    "ResponseStatus": {
+      "enum": [
+        "completed",
+        "require_approval",
+        "refused",
+        "error"
+      ],
+      "title": "ResponseStatus",
+      "type": "string"
+    },
+    "ToolCall": {
+      "properties": {
+        "approval_id": {
+          "anyOf": [
+            {
+              "maxLength": 200,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Approval Id"
+        },
+        "arguments": {
+          "additionalProperties": true,
+          "title": "Arguments",
+          "type": "object"
+        },
+        "name": {
+          "maxLength": 200,
+          "minLength": 1,
+          "title": "Name",
+          "type": "string"
+        },
+        "status": {
+          "$ref": "#/$defs/ToolCallStatus",
+          "default": "executed"
+        }
+      },
+      "required": [
+        "name"
+      ],
+      "title": "ToolCall",
+      "type": "object"
+    },
+    "ToolCallStatus": {
+      "enum": [
+        "executed",
+        "proposed",
+        "blocked"
+      ],
+      "title": "ToolCallStatus",
+      "type": "string"
+    }
+  },
+  "$id": "https://github.com/kogunlowo123/continuous-red-teaming/schemas/agent-reply.response.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "description": "Validated agent response body (``schemas/agent-reply.schema.json``).",
+  "properties": {
+    "output": {
+      "default": "",
+      "maxLength": 200000,
+      "title": "Output",
+      "type": "string"
+    },
+    "status": {
+      "$ref": "#/$defs/ResponseStatus",
+      "default": "completed"
+    },
+    "tool_calls": {
+      "default": [],
+      "items": {
+        "$ref": "#/$defs/ToolCall"
+      },
+      "maxItems": 200,
+      "title": "Tool Calls",
+      "type": "array"
+    }
+  },
+  "title": "AgentReply",
+  "type": "object"
+}

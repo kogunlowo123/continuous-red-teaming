@@ -1,0 +1,106 @@
+name: Continuous red-teaming release gate
+description: >
+  Validate an AI agent release with versioned benign probe suites and block
+  promotion unless the release gate returns a signed pass (or a human approval).
+author: kogunlowo123
+branding:
+  icon: shield
+  color: red
+
+inputs:
+  gate-url:
+    description: Base URL of the continuous-red-teaming platform
+    required: true
+  target-id:
+    description: Registered target id of the agent under test
+    required: true
+  target-version:
+    description: Version of the agent being released (for example the commit SHA or tag)
+    required: true
+  suite:
+    description: Probe suite, as name or name@version
+    required: false
+    default: agent-baseline
+  environment:
+    description: Release environment (development, staging, production)
+    required: false
+    default: staging
+  seed:
+    description: Expansion seed; leave empty for a fresh random seed per run
+    required: false
+    default: ""
+  audience:
+    description: Audience of the GitHub OIDC token requested when no token is given
+    required: false
+    default: continuous-red-teaming
+  token:
+    description: Bearer token for the gate API; when empty the job's GitHub OIDC token is used (needs id-token write)
+    required: false
+    default: ""
+  timeout-minutes:
+    description: Maximum time to wait for the validation run
+    required: false
+    default: "30"
+  approval-wait-minutes:
+    description: How long to wait for a human approval when the gate requires one (0 = do not wait)
+    required: false
+    default: "0"
+  poll-interval-seconds:
+    description: Polling interval for run and approval status
+    required: false
+    default: "5"
+  report-path:
+    description: Where to write the signed evaluation report (JSON)
+    required: false
+    default: release-gate-report.json
+
+outputs:
+  outcome:
+    description: pass, fail, require_approval or approved
+    value: ${{ steps.gate.outputs.outcome }}
+  decision-id:
+    description: Gate decision id
+    value: ${{ steps.gate.outputs.decision-id }}
+  run-id:
+    description: Validation run id
+    value: ${{ steps.gate.outputs.run-id }}
+  report-digest:
+    description: SHA-256 digest of the signed evaluation report
+    value: ${{ steps.gate.outputs.report-digest }}
+
+runs:
+  using: composite
+  steps:
+    - id: gate
+      shell: bash
+      env:
+        CRT_GATE_TOKEN: ${{ inputs.token }}
+        GATE_URL: ${{ inputs.gate-url }}
+        TARGET_ID: ${{ inputs.target-id }}
+        TARGET_VERSION: ${{ inputs.target-version }}
+        SUITE: ${{ inputs.suite }}
+        RELEASE_ENVIRONMENT: ${{ inputs.environment }}
+        SEED: ${{ inputs.seed }}
+        AUDIENCE: ${{ inputs.audience }}
+        TIMEOUT_MINUTES: ${{ inputs.timeout-minutes }}
+        APPROVAL_WAIT_MINUTES: ${{ inputs.approval-wait-minutes }}
+        POLL_INTERVAL: ${{ inputs.poll-interval-seconds }}
+        REPORT_PATH: ${{ inputs.report-path }}
+      run: |
+        set -euo pipefail
+        args=(
+          --url "$GATE_URL"
+          --target-id "$TARGET_ID"
+          --target-version "$TARGET_VERSION"
+          --suite "$SUITE"
+          --environment "$RELEASE_ENVIRONMENT"
+          --audience "$AUDIENCE"
+          --timeout-minutes "$TIMEOUT_MINUTES"
+          --approval-wait-minutes "$APPROVAL_WAIT_MINUTES"
+          --poll-interval "$POLL_INTERVAL"
+          --report-file "$REPORT_PATH"
+        )
+        if [ -n "$SEED" ]; then
+          args+=(--seed "$SEED")
+        fi
+        python3 -I "$GITHUB_ACTION_PATH/src/continuous_red_teaming/gate_client.py" "${args[@]}"

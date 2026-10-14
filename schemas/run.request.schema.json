@@ -1,0 +1,60 @@
+{
+  "$defs": {
+    "Environment": {
+      "enum": [
+        "development",
+        "staging",
+        "production"
+      ],
+      "title": "Environment",
+      "type": "string"
+    }
+  },
+  "$id": "https://github.com/kogunlowo123/continuous-red-teaming/schemas/run.request.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "environment": {
+      "$ref": "#/$defs/Environment",
+      "default": "staging"
+    },
+    "seed": {
+      "anyOf": [
+        {
+          "maximum": 2147483647,
+          "minimum": 0,
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Seed"
+    },
+    "suite": {
+      "description": "name or name@version",
+      "maxLength": 140,
+      "minLength": 1,
+      "title": "Suite",
+      "type": "string"
+    },
+    "target_id": {
+      "maxLength": 64,
+      "minLength": 1,
+      "title": "Target Id",
+      "type": "string"
+    },
+    "target_version": {
+      "title": "Target Version",
+      "type": "string"
+    }
+  },
+  "required": [
+    "target_id",
+    "target_version",
+    "suite"
+  ],
+  "title": "RunRequest",
+  "type": "object"
+}

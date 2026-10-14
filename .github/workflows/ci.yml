@@ -1,0 +1,218 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python: ["3.12", "3.13"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v10.3.0
+        with:
+          enable-cache: true
+      - run: uv sync --frozen --python ${{ matrix.python }}
+      - name: Lint and format
+        run: |
+          uv run ruff check src tests
+          uv run black --check src tests
+      - name: Type check
+        run: uv run mypy
+      - name: Static security analysis
+        run: uv run python -m bandit -q -r src -c pyproject.toml
+      - name: Published contracts are current
+        run: uv run python -m continuous_red_teaming.contracts --check
+      - name: Unit, security, chaos, performance and e2e tests (coverage gate 90%)
+        run: uv run pytest --cov-report=xml
+      - name: Dependency vulnerability audit
+        if: matrix.python == '3.12'
+        run: |
+          # agentic-core is a pinned git tag of this portfolio's own kernel; every
+          # third-party package it pulls in is in the export and is audited.
+          uv export --frozen --no-dev --no-emit-project --no-hashes --format requirements-txt             | grep -v '^agentic-core' > audit-requirements.txt
+          uvx pip-audit -r audit-requirements.txt --no-deps --disable-pip
+      - uses: actions/upload-artifact@v4
+        if: matrix.python == '3.12'
+        with:
+          name: coverage
+          path: coverage.xml
+
+  integration-postgres:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16.4-alpine
+        env:
+          POSTGRES_DB: redteam
+          POSTGRES_USER: redteam
+          POSTGRES_PASSWORD: ci-only
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U redteam" --health-interval 5s --health-retries 10
+    env:
+      CRT_TEST_DATABASE_URL: postgresql+asyncpg://redteam:ci-only@localhost:5432/redteam
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v10.3.0
+      - run: uv sync --frozen
+      - run: uv run pytest tests/integration -m integration --no-cov -ra
+
+  deploy-artifacts:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: azure/setup-helm@v4
+        with:
+          version: v3.16.2
+      - name: Helm lint and render
+        run: |
+          helm lint deployments/helm/continuous-red-teaming \
+            -f deployments/helm/continuous-red-teaming/ci/test-values.yaml
+          helm template crt deployments/helm/continuous-red-teaming \
+            -f deployments/helm/continuous-red-teaming/ci/test-values.yaml > rendered.yaml
+          if helm template crt deployments/helm/continuous-red-teaming > /dev/null 2>&1; then
+            echo "chart rendered without required values"; exit 1
+          fi
+      - name: Kubernetes schema validation (kubeconform)
+        run: |
+          curl -sSfL https://github.com/yannh/kubeconform/releases/download/v0.6.7/kubeconform-linux-amd64.tar.gz | tar xz
+          ./kubeconform -strict -summary -ignore-missing-schemas \
+            -schema-location default \
+            -schema-location 'https://raw.githubusercontent.com/datreeio/CRDs-catalog/main/{{.Group}}/{{.ResourceKind}}_{{.ResourceAPIVersion}}.json' \
+            rendered.yaml deployments/kubernetes/namespace.yaml deployments/kubernetes/external-secrets.yaml
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.9.8
+      - name: Terraform fmt and validate (aws, azure, gcp)
+        run: |
+          terraform fmt -recursive -check deployments/terraform
+          for cloud in aws azure gcp; do
+            terraform -chdir=deployments/terraform/$cloud init -backend=false -input=false
+            terraform -chdir=deployments/terraform/$cloud validate
+          done
+      - name: IaC and Kubernetes misconfiguration scan (Trivy)
+        uses: aquasecurity/trivy-action@v0.36.0
+        with:
+          scan-type: config
+          scan-ref: deployments
+          severity: HIGH,CRITICAL
+          exit-code: "1"
+
+  container:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build image
+        run: docker build -t continuous-red-teaming:ci .
+      - name: Container smoke test (starts, reports healthy, trusts this workflow's OIDC)
+        run: |
+          docker run -d --name crt -p 8080:8080 \
+            -e CRT_ENVIRONMENT=ci -e CRT_DEV_EPHEMERAL_KEYS=true \
+            -e CRT_PUBLIC_URL=http://localhost:8080 \
+            -e CRT_DATABASE_URL=sqlite+aiosqlite:////tmp/crt.db \
+            -e CRT_AUDIT_LOG_PATH=/tmp/audit.jsonl \
+            -e CRT_ALLOW_REFERENCE_TARGETS=true \
+            -e 'CRT_TARGET_ALLOWED_HOSTS=["agents.ci.internal"]' \
+            -e 'CRT_TRUSTED_ISSUERS=[{"issuer":"https://token.actions.githubusercontent.com","jwks_url":"https://token.actions.githubusercontent.com/.well-known/jwks","audience":"continuous-red-teaming","kind":"pipeline","default_roles":["redteam-operator","release-pipeline"],"subject_patterns":["repo:${{ github.repository }}:*"]}]' \
+            continuous-red-teaming:ci
+          for i in $(seq 1 30); do
+            curl -sf http://localhost:8080/readyz && break; sleep 1
+          done
+          curl -sf http://localhost:8080/.well-known/agent-card.json | grep -q start-validation-run
+          curl -sf http://localhost:8080/.well-known/report-signing-keys | grep -q Ed25519
+          docker inspect --format '{{.Config.User}}' continuous-red-teaming:ci | grep -q 10001
+      - name: Register reference targets (operator via GitHub OIDC)
+        id: targets
+        run: |
+          token=$(curl -sSf -H "Authorization: bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" \
+            "$ACTIONS_ID_TOKEN_REQUEST_URL&audience=continuous-red-teaming" | jq -r .value)
+          register() {
+            curl -sSf -X POST http://localhost:8080/v1/targets \
+              -H "Authorization: Bearer $token" -H "Content-Type: application/json" \
+              -d "$1" | jq -r .id
+          }
+          echo "hardened=$(register '{"name":"ci-hardened","kind":"reference","reference_profile":{},"owner":"ci","risk":"moderate"}')" >> "$GITHUB_OUTPUT"
+          echo "weak=$(register '{"name":"ci-weak","kind":"reference","reference_profile":{"marker_leak_rate":0.2},"owner":"ci","risk":"moderate"}')" >> "$GITHUB_OUTPUT"
+      - name: Release gate action passes a hardened agent
+        id: gate-pass
+        uses: ./
+        with:
+          gate-url: http://localhost:8080
+          target-id: ${{ steps.targets.outputs.hardened }}
+          target-version: ${{ github.sha }}
+          poll-interval-seconds: "2"
+          report-path: report-hardened.json
+      - name: Release gate action blocks a weak agent
+        id: gate-fail
+        continue-on-error: true
+        uses: ./
+        with:
+          gate-url: http://localhost:8080
+          target-id: ${{ steps.targets.outputs.weak }}
+          target-version: ${{ github.sha }}
+          poll-interval-seconds: "2"
+          report-path: report-weak.json
+      - name: Gate outcomes are as expected
+        env:
+          PASS_OUTCOME: ${{ steps.gate-pass.outputs.outcome }}
+          FAIL_OUTCOME: ${{ steps.gate-fail.outputs.outcome }}
+          FAIL_STEP: ${{ steps.gate-fail.outcome }}
+        run: |
+          test "$PASS_OUTCOME" = "pass"
+          test "$FAIL_OUTCOME" = "fail"
+          test "$FAIL_STEP" = "failure"
+          jq -e '.signature.alg == "EdDSA"' report-hardened.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: release-gate-reports
+          path: report-*.json
+      - name: Container logs
+        if: always()
+        run: docker logs crt
+      - name: Image vulnerability scan (Trivy)
+        uses: aquasecurity/trivy-action@v0.36.0
+        with:
+          image-ref: continuous-red-teaming:ci
+          severity: HIGH,CRITICAL
+          ignore-unfixed: true
+          exit-code: "1"
+      - name: Image SBOM (Syft)
+        uses: anchore/sbom-action@v0.24.3
+        with:
+          image: continuous-red-teaming:ci
+          format: cyclonedx-json
+          output-file: sbom.cdx.json
+      - name: SBOM vulnerability gate (Grype)
+        uses: anchore/scan-action@v7.4.2
+        with:
+          sbom: sbom.cdx.json
+          fail-build: true
+          severity-cutoff: high
+          only-fixed: true
+      - uses: actions/upload-artifact@v4
+        with:
+          name: sbom
+          path: sbom.cdx.json
+
+  semgrep:
+    runs-on: ubuntu-latest
+    container:
+      image: semgrep/semgrep:1.95.0
+    steps:
+      - uses: actions/checkout@v4
+      - run: semgrep scan --config p/python --config p/secrets --config p/dockerfile --config p/github-actions --error --metrics=off src Dockerfile action.yml .github

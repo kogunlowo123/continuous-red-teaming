@@ -1,0 +1,59 @@
+# Who may do what on the platform (people and CI pipelines).
+# Agents are authorized by the identity fabric instead (scopes such as
+# redteam.runs:start); approving a release is refused for agents in code.
+# Combining: deny overrides, then require_approval, then allow; default deny.
+#
+# Roles come from the enterprise IdP (roles claim) or, for CI issuers, from
+# the trusted issuer's default_roles (CRT_TRUSTED_ISSUERS).
+name: platform-access
+version: "2026.10.0"
+rules:
+  - id: deny-self-approval
+    description: The principal who requested a release decision cannot approve it.
+    effect: deny
+    actions: ["redteam.gate:approve"]
+    conditions:
+      - {attribute: subject.id, operator: eq_attr, value: resource.requested_by}
+
+  - id: deny-non-human-approval
+    description: Only people approve releases; pipelines never do.
+    effect: deny
+    actions: ["redteam.gate:approve"]
+    conditions:
+      - {attribute: subject.kind, operator: ne, value: user}
+
+  - id: allow-read
+    description: Every platform role may read suites, targets, runs and decisions.
+    effect: allow
+    actions:
+      - "redteam.suites:read"
+      - "redteam.targets:read"
+      - "redteam.runs:read"
+      - "redteam.gate:read"
+    conditions:
+      - attribute: subject.roles
+        operator: contains_any
+        value: [redteam-operator, redteam-auditor, release-approver, release-pipeline]
+
+  - id: allow-operator-administration
+    description: Operators register targets and calibrate the LLM judge.
+    effect: allow
+    actions: ["redteam.targets:register", "redteam.judges:calibrate"]
+    conditions:
+      - {attribute: subject.roles, operator: contains, value: redteam-operator}
+
+  - id: allow-runs-and-gate
+    description: Operators and release pipelines start runs and evaluate the gate.
+    effect: allow
+    actions: ["redteam.runs:start", "redteam.gate:evaluate"]
+    conditions:
+      - attribute: subject.roles
+        operator: contains_any
+        value: [redteam-operator, release-pipeline]
+
+  - id: allow-release-approval
+    description: Release approvers sign off decisions that require approval.
+    effect: allow
+    actions: ["redteam.gate:approve"]
+    conditions:
+      - {attribute: subject.roles, operator: contains, value: release-approver}

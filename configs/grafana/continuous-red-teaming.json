@@ -1,0 +1,65 @@
+{
+  "title": "Continuous Red Teaming",
+  "uid": "continuous-red-teaming",
+  "schemaVersion": 39,
+  "time": {"from": "now-24h", "to": "now"},
+  "templating": {
+    "list": [
+      {"name": "datasource", "type": "datasource", "query": "prometheus"}
+    ]
+  },
+  "panels": [
+    {
+      "id": 1, "type": "stat", "title": "API success (5m)",
+      "gridPos": {"x": 0, "y": 0, "w": 6, "h": 4},
+      "datasource": {"type": "prometheus", "uid": "${datasource}"},
+      "fieldConfig": {"defaults": {"unit": "percentunit", "decimals": 3}},
+      "targets": [{"expr": "1 - crt:request_errors:ratio_5m"}]
+    },
+    {
+      "id": 2, "type": "stat", "title": "Runs executing",
+      "gridPos": {"x": 6, "y": 0, "w": 6, "h": 4},
+      "datasource": {"type": "prometheus", "uid": "${datasource}"},
+      "targets": [{"expr": "sum(crt_runs_active)"}]
+    },
+    {
+      "id": 3, "type": "timeseries", "title": "Gate decisions by outcome",
+      "gridPos": {"x": 12, "y": 0, "w": 12, "h": 8},
+      "datasource": {"type": "prometheus", "uid": "${datasource}"},
+      "targets": [{"expr": "sum by (outcome) (increase(crt_gate_decisions_total[1h]))", "legendFormat": "{{outcome}}"}]
+    },
+    {
+      "id": 4, "type": "timeseries", "title": "Probes by category and outcome",
+      "gridPos": {"x": 0, "y": 8, "w": 12, "h": 8},
+      "datasource": {"type": "prometheus", "uid": "${datasource}"},
+      "targets": [{"expr": "sum by (category, outcome) (rate(crt_probes_total[15m]))", "legendFormat": "{{category}} {{outcome}}"}]
+    },
+    {
+      "id": 5, "type": "bargauge", "title": "Failure-rate upper bound, last gated run",
+      "gridPos": {"x": 12, "y": 8, "w": 12, "h": 8},
+      "datasource": {"type": "prometheus", "uid": "${datasource}"},
+      "fieldConfig": {"defaults": {"unit": "percentunit", "max": 0.2, "thresholds": {"mode": "absolute", "steps": [{"color": "green", "value": null}, {"color": "orange", "value": 0.03}, {"color": "red", "value": 0.05}]}}},
+      "targets": [{"expr": "crt_category_failure_rate_upper", "legendFormat": "{{target}} {{category}}"}]
+    },
+    {
+      "id": 6, "type": "timeseries", "title": "Target response time p95",
+      "gridPos": {"x": 0, "y": 16, "w": 12, "h": 8},
+      "datasource": {"type": "prometheus", "uid": "${datasource}"},
+      "fieldConfig": {"defaults": {"unit": "s"}},
+      "targets": [{"expr": "histogram_quantile(0.95, sum by (le, target_kind) (rate(crt_probe_duration_seconds_bucket[15m])))", "legendFormat": "{{target_kind}}"}]
+    },
+    {
+      "id": 7, "type": "timeseries", "title": "Refused requests by action",
+      "gridPos": {"x": 12, "y": 16, "w": 12, "h": 8},
+      "datasource": {"type": "prometheus", "uid": "${datasource}"},
+      "targets": [{"expr": "sum by (action) (rate(crt_access_denied_total[10m]))", "legendFormat": "{{action}}"}]
+    },
+    {
+      "id": 8, "type": "timeseries", "title": "API latency p99 by route",
+      "gridPos": {"x": 0, "y": 24, "w": 24, "h": 8},
+      "datasource": {"type": "prometheus", "uid": "${datasource}"},
+      "fieldConfig": {"defaults": {"unit": "s"}},
+      "targets": [{"expr": "histogram_quantile(0.99, sum by (le, route) (rate(crt_http_request_duration_seconds_bucket[5m])))", "legendFormat": "{{route}}"}]
+    }
+  ]
+}

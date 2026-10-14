@@ -1,0 +1,43 @@
+{{- $p := .Values.platform -}}
+{{- if not $p.trustedIssuers }}{{ fail "platform.trustedIssuers is required" }}{{ end -}}
+{{- if not $p.targetAllowedHosts }}{{ fail "platform.targetAllowedHosts is required" }}{{ end -}}
+{{- if not $p.mcpAllowedHosts }}{{ fail "platform.mcpAllowedHosts is required" }}{{ end -}}
+{{- if and $p.fabric.url (not $p.fabric.issuer) }}{{ fail "platform.fabric.issuer is required with platform.fabric.url" }}{{ end -}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "crt.fullname" . }}
+  labels: {{- include "crt.labels" . | nindent 4 }}
+data:
+  CRT_ENVIRONMENT: {{ $p.environment | quote }}
+  CRT_PUBLIC_URL: {{ required "platform.publicUrl is required" $p.publicUrl | quote }}
+  CRT_AUDIT_KEY_FILE: {{ printf "/etc/continuous-red-teaming/audit-key/%s" (required "secrets.auditKeyFile is required" .Values.secrets.auditKeyFile) | quote }}
+  CRT_TRUSTED_ISSUERS: {{ $p.trustedIssuers | toJson | quote }}
+  CRT_TARGET_ALLOWED_HOSTS: {{ $p.targetAllowedHosts | toJson | quote }}
+  CRT_MCP_ALLOWED_HOSTS: {{ $p.mcpAllowedHosts | toJson | quote }}
+  CRT_ALLOW_REFERENCE_TARGETS: {{ $p.allowReferenceTargets | quote }}
+  CRT_MAX_PROBES_PER_RUN: {{ $p.maxProbesPerRun | quote }}
+  CRT_PROBE_CONCURRENCY: {{ $p.probeConcurrency | quote }}
+  CRT_MAX_ACTIVE_RUNS: {{ $p.maxActiveRuns | quote }}
+  CRT_ABORT_AFTER_CONSECUTIVE_ERRORS: {{ $p.abortAfterConsecutiveErrors | quote }}
+  CRT_LOG_LEVEL: {{ $p.logLevel | quote }}
+  {{- with $p.retiredReportKeys }}
+  CRT_RETIRED_REPORT_KEYS: {{ . | toJson | quote }}
+  {{- end }}
+  {{- with $p.otlpEndpoint }}
+  CRT_OTLP_ENDPOINT: {{ . | quote }}
+  {{- end }}
+  {{- if $p.fabric.url }}
+  CRT_FABRIC_URL: {{ $p.fabric.url | quote }}
+  CRT_FABRIC_ISSUER: {{ $p.fabric.issuer | quote }}
+  {{- with $p.fabric.clientId }}
+  CRT_FABRIC_CLIENT_ID: {{ . | quote }}
+  CRT_FABRIC_WORKLOAD_TOKEN_FILE: /var/run/secrets/continuous-red-teaming/fabric/token
+  {{- end }}
+  {{- with $p.fabric.scope }}
+  CRT_FABRIC_SCOPE: {{ . | quote }}
+  {{- end }}
+  {{- end }}
+  {{- if $p.llmJudge.enabled }}
+  CRT_PROVIDERS_FILE: {{ $p.llmJudge.providersFile | quote }}
+  {{- end }}

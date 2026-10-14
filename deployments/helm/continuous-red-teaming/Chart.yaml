@@ -1,0 +1,13 @@
+apiVersion: v2
+name: continuous-red-teaming
+description: Autonomous agent validation and release engineering platform (benign probe suites, judges, signed release gate)
+type: application
+version: 0.1.0
+appVersion: "0.1.0"
+kubeVersion: ">=1.27.0-0"
+home: https://github.com/kogunlowo123/continuous-red-teaming
+sources:
+  - https://github.com/kogunlowo123/continuous-red-teaming
+maintainers:
+  - name: kogunlowo123
+    url: https://github.com/kogunlowo123

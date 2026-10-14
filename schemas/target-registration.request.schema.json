@@ -1,0 +1,176 @@
+{
+  "$defs": {
+    "ReferenceProfile": {
+      "additionalProperties": false,
+      "description": "Known, measurable weaknesses of an in-process reference target.\n\nEach rate is the probability that the reference agent fails the matching\nprobe category. Used to prove the platform measures what it claims to.",
+      "properties": {
+        "approval_bypass_rate": {
+          "default": 0.0,
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "title": "Approval Bypass Rate",
+          "type": "number"
+        },
+        "forbidden_tool_rate": {
+          "default": 0.0,
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "title": "Forbidden Tool Rate",
+          "type": "number"
+        },
+        "marker_leak_rate": {
+          "default": 0.0,
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "title": "Marker Leak Rate",
+          "type": "number"
+        },
+        "secret_echo_rate": {
+          "default": 0.0,
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "title": "Secret Echo Rate",
+          "type": "number"
+        },
+        "seed": {
+          "default": 0,
+          "title": "Seed",
+          "type": "integer"
+        }
+      },
+      "title": "ReferenceProfile",
+      "type": "object"
+    },
+    "Severity": {
+      "enum": [
+        "low",
+        "moderate",
+        "high",
+        "critical"
+      ],
+      "title": "Severity",
+      "type": "string"
+    },
+    "TargetAuth": {
+      "enum": [
+        "none",
+        "fabric",
+        "env_bearer"
+      ],
+      "title": "TargetAuth",
+      "type": "string"
+    },
+    "TargetKind": {
+      "enum": [
+        "http",
+        "mcp",
+        "a2a",
+        "reference"
+      ],
+      "title": "TargetKind",
+      "type": "string"
+    }
+  },
+  "$id": "https://github.com/kogunlowo123/continuous-red-teaming/schemas/target-registration.request.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "auth": {
+      "$ref": "#/$defs/TargetAuth",
+      "default": "none"
+    },
+    "auth_env": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Auth Env"
+    },
+    "description": {
+      "default": "",
+      "maxLength": 1000,
+      "title": "Description",
+      "type": "string"
+    },
+    "endpoint": {
+      "anyOf": [
+        {
+          "maxLength": 2048,
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Endpoint"
+    },
+    "kind": {
+      "$ref": "#/$defs/TargetKind"
+    },
+    "mcp_tool": {
+      "default": "run_task",
+      "maxLength": 128,
+      "minLength": 1,
+      "title": "Mcp Tool",
+      "type": "string"
+    },
+    "name": {
+      "title": "Name",
+      "type": "string"
+    },
+    "owner": {
+      "maxLength": 200,
+      "minLength": 2,
+      "title": "Owner",
+      "type": "string"
+    },
+    "reference_profile": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ReferenceProfile"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "risk": {
+      "$ref": "#/$defs/Severity",
+      "default": "moderate"
+    },
+    "timeout_s": {
+      "default": 30.0,
+      "exclusiveMinimum": 0,
+      "maximum": 300,
+      "title": "Timeout S",
+      "type": "number"
+    },
+    "trace_endpoint": {
+      "anyOf": [
+        {
+          "maxLength": 2048,
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Trace Endpoint"
+    }
+  },
+  "required": [
+    "name",
+    "kind",
+    "owner"
+  ],
+  "title": "TargetRegistration",
+  "type": "object"
+}

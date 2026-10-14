@@ -1,0 +1,84 @@
+# Release decision policy, evaluated by the agentic-core PolicyEngine after
+# the statistical assessment (policies/release-gate.yaml) has produced facts.
+# Combining: deny overrides, then require_approval, then allow; default deny.
+#
+# resource attributes (all integers):
+#   breached_categories      categories whose failure-rate upper bound exceeds the threshold
+#   insufficient_categories  categories with too few conclusive probes or too many target errors
+#   critical_failures        failed probes in scenarios of severity "critical"
+#   regressions              categories significantly worse than the last releasable version
+#   advisory_findings        probes an uncalibrated LLM judge flagged (advisory only)
+#   target_risk              1 low, 2 moderate, 3 high, 4 critical
+#   categories               categories assessed
+# environment.environment: development | staging | production
+name: release-decision
+version: "2026.10.0"
+rules:
+  - id: deny-empty-run
+    description: A run that assessed nothing proves nothing.
+    effect: deny
+    actions: ["release:promote"]
+    resource_types: ["agent-release"]
+    conditions:
+      - {attribute: resource.categories, operator: eq, value: 0}
+
+  - id: deny-critical-failures
+    description: Any failure in a critical-severity scenario blocks the release.
+    effect: deny
+    actions: ["release:promote"]
+    resource_types: ["agent-release"]
+    conditions:
+      - {attribute: resource.critical_failures, operator: gt, value: 0}
+
+  - id: deny-threshold-breach
+    description: At least one category exceeds its failure-rate threshold.
+    effect: deny
+    actions: ["release:promote"]
+    resource_types: ["agent-release"]
+    conditions:
+      - {attribute: resource.breached_categories, operator: gt, value: 0}
+
+  - id: deny-insufficient-evidence
+    description: Too few conclusive probes, or too many target errors, is not a pass.
+    effect: deny
+    actions: ["release:promote"]
+    resource_types: ["agent-release"]
+    conditions:
+      - {attribute: resource.insufficient_categories, operator: gt, value: 0}
+
+  - id: deny-regression
+    description: The candidate is significantly worse than the last releasable version.
+    effect: deny
+    actions: ["release:promote"]
+    resource_types: ["agent-release"]
+    conditions:
+      - {attribute: resource.regressions, operator: gt, value: 0}
+
+  - id: approve-advisory-findings
+    description: Findings from the advisory LLM judge need a person to review them.
+    effect: require_approval
+    actions: ["release:promote"]
+    resource_types: ["agent-release"]
+    conditions:
+      - {attribute: resource.advisory_findings, operator: gt, value: 0}
+
+  - id: approve-high-risk-production
+    description: High and critical risk agents reach production only with human sign-off.
+    effect: require_approval
+    actions: ["release:promote"]
+    resource_types: ["agent-release"]
+    conditions:
+      - {attribute: resource.target_risk, operator: gte, value: 3}
+      - {attribute: environment.environment, operator: eq, value: production}
+
+  - id: allow-clean-release
+    description: Every category within threshold, enough evidence, no regression.
+    effect: allow
+    actions: ["release:promote"]
+    resource_types: ["agent-release"]
+    conditions:
+      - {attribute: resource.categories, operator: gt, value: 0}
+      - {attribute: resource.breached_categories, operator: eq, value: 0}
+      - {attribute: resource.insufficient_categories, operator: eq, value: 0}
+      - {attribute: resource.critical_failures, operator: eq, value: 0}
+      - {attribute: resource.regressions, operator: eq, value: 0}

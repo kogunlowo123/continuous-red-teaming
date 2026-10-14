@@ -1,0 +1,311 @@
+{
+  "$defs": {
+    "Category": {
+      "enum": [
+        "marker_leakage",
+        "secret_echo",
+        "forbidden_tool",
+        "approval_bypass",
+        "policy_violation"
+      ],
+      "title": "Category",
+      "type": "string"
+    },
+    "CategoryStats": {
+      "properties": {
+        "bootstrap_high": {
+          "title": "Bootstrap High",
+          "type": "number"
+        },
+        "bootstrap_low": {
+          "title": "Bootstrap Low",
+          "type": "number"
+        },
+        "category": {
+          "$ref": "#/$defs/Category"
+        },
+        "conclusive": {
+          "title": "Conclusive",
+          "type": "integer"
+        },
+        "critical_failures": {
+          "title": "Critical Failures",
+          "type": "integer"
+        },
+        "errors": {
+          "title": "Errors",
+          "type": "integer"
+        },
+        "failure_rate": {
+          "title": "Failure Rate",
+          "type": "number"
+        },
+        "failures": {
+          "title": "Failures",
+          "type": "integer"
+        },
+        "probes": {
+          "title": "Probes",
+          "type": "integer"
+        },
+        "scenarios": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Scenarios",
+          "type": "array"
+        },
+        "wilson_high": {
+          "title": "Wilson High",
+          "type": "number"
+        },
+        "wilson_low": {
+          "title": "Wilson Low",
+          "type": "number"
+        }
+      },
+      "required": [
+        "category",
+        "probes",
+        "conclusive",
+        "failures",
+        "errors",
+        "critical_failures",
+        "failure_rate",
+        "wilson_low",
+        "wilson_high",
+        "bootstrap_low",
+        "bootstrap_high",
+        "scenarios"
+      ],
+      "title": "CategoryStats",
+      "type": "object"
+    },
+    "Environment": {
+      "enum": [
+        "development",
+        "staging",
+        "production"
+      ],
+      "title": "Environment",
+      "type": "string"
+    },
+    "RunStatus": {
+      "enum": [
+        "queued",
+        "running",
+        "completed",
+        "aborted",
+        "failed"
+      ],
+      "title": "RunStatus",
+      "type": "string"
+    },
+    "RunSummary": {
+      "properties": {
+        "categories": {
+          "items": {
+            "$ref": "#/$defs/CategoryStats"
+          },
+          "title": "Categories",
+          "type": "array"
+        },
+        "confidence": {
+          "title": "Confidence",
+          "type": "number"
+        },
+        "errors": {
+          "title": "Errors",
+          "type": "integer"
+        },
+        "failures": {
+          "title": "Failures",
+          "type": "integer"
+        },
+        "scenarios": {
+          "items": {
+            "$ref": "#/$defs/ScenarioStats"
+          },
+          "title": "Scenarios",
+          "type": "array"
+        },
+        "total": {
+          "title": "Total",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "confidence",
+        "total",
+        "failures",
+        "errors",
+        "categories",
+        "scenarios"
+      ],
+      "title": "RunSummary",
+      "type": "object"
+    },
+    "ScenarioStats": {
+      "properties": {
+        "category": {
+          "$ref": "#/$defs/Category"
+        },
+        "conclusive": {
+          "title": "Conclusive",
+          "type": "integer"
+        },
+        "errors": {
+          "title": "Errors",
+          "type": "integer"
+        },
+        "failures": {
+          "title": "Failures",
+          "type": "integer"
+        },
+        "scenario_id": {
+          "title": "Scenario Id",
+          "type": "string"
+        },
+        "severity": {
+          "$ref": "#/$defs/Severity"
+        }
+      },
+      "required": [
+        "scenario_id",
+        "category",
+        "severity",
+        "conclusive",
+        "failures",
+        "errors"
+      ],
+      "title": "ScenarioStats",
+      "type": "object"
+    },
+    "Severity": {
+      "enum": [
+        "low",
+        "moderate",
+        "high",
+        "critical"
+      ],
+      "title": "Severity",
+      "type": "string"
+    }
+  },
+  "$id": "https://github.com/kogunlowo123/continuous-red-teaming/schemas/run.response.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "properties": {
+    "completed_at": {
+      "anyOf": [
+        {
+          "format": "date-time",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Completed At"
+    },
+    "created_at": {
+      "format": "date-time",
+      "title": "Created At",
+      "type": "string"
+    },
+    "environment": {
+      "$ref": "#/$defs/Environment"
+    },
+    "error": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Error"
+    },
+    "id": {
+      "title": "Id",
+      "type": "string"
+    },
+    "probe_count": {
+      "default": 0,
+      "title": "Probe Count",
+      "type": "integer"
+    },
+    "requested_by": {
+      "title": "Requested By",
+      "type": "string"
+    },
+    "seed": {
+      "title": "Seed",
+      "type": "integer"
+    },
+    "started_at": {
+      "anyOf": [
+        {
+          "format": "date-time",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Started At"
+    },
+    "status": {
+      "$ref": "#/$defs/RunStatus"
+    },
+    "suite_digest": {
+      "title": "Suite Digest",
+      "type": "string"
+    },
+    "suite_name": {
+      "title": "Suite Name",
+      "type": "string"
+    },
+    "suite_version": {
+      "title": "Suite Version",
+      "type": "string"
+    },
+    "summary": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/RunSummary"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "target_id": {
+      "title": "Target Id",
+      "type": "string"
+    },
+    "target_version": {
+      "title": "Target Version",
+      "type": "string"
+    }
+  },
+  "required": [
+    "id",
+    "target_id",
+    "target_version",
+    "suite_name",
+    "suite_version",
+    "suite_digest",
+    "seed",
+    "environment",
+    "status",
+    "requested_by",
+    "created_at"
+  ],
+  "title": "Run",
+  "type": "object"
+}

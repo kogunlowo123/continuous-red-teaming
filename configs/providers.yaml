@@ -1,0 +1,33 @@
+# Model providers for the optional LLM rubric judge (CRT_PROVIDERS_FILE).
+#
+# The judge reads agent outputs, which can contain internal data, so it is
+# routed only to providers approved for CONFIDENTIAL (max_classification: 2).
+# ${NAME} values are resolved from the environment at start-up and loading
+# fails if any is unset; credentials are referenced by variable name only.
+# The judge stays advisory until POST /v1/judges/llm/calibration shows it
+# agrees with the deterministic judges (Cohen's kappa >= 0.6).
+#
+# Primary deployment is GCP: Gemini on Vertex AI with a workload-identity
+# access token; Claude is the failover.
+providers:
+  - kind: gemini
+    access_token_env: GCP_ACCESS_TOKEN
+    base_url: https://${GCP_REGION}-aiplatform.googleapis.com/v1/projects/${GCP_PROJECT_ID}/locations/${GCP_REGION}/publishers/google
+    profile:
+      name: gemini-judge
+      model: gemini-2.5-pro
+      region: ${GCP_REGION}
+      max_classification: 2
+      input_cost_per_mtok: ${GEMINI_INPUT_USD_PER_MTOK}
+      output_cost_per_mtok: ${GEMINI_OUTPUT_USD_PER_MTOK}
+      tasks: [evaluate]
+
+  - kind: anthropic
+    api_key_env: ANTHROPIC_API_KEY
+    profile:
+      name: claude-judge
+      model: claude-opus-5-5
+      max_classification: 2
+      input_cost_per_mtok: ${CLAUDE_INPUT_USD_PER_MTOK}
+      output_cost_per_mtok: ${CLAUDE_OUTPUT_USD_PER_MTOK}
+      tasks: [evaluate]
